@@ -1,3 +1,7 @@
+/*
+Mahjong in C++
+*/
+
 #include <iostream>
 #include <ctime>
 #include <random>
