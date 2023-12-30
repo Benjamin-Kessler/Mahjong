@@ -1,10 +1,12 @@
 #include <iostream>
 #include <ctime>
 #include <random>
+#include <vector>
 
 #include "Tile.hpp"
 #include "Set.hpp"
 #include "Game.hpp"
+#include "Player.hpp"
 
 using namespace std;
 
@@ -20,6 +22,7 @@ int main()
     // cout << "Welcome Player " << player_number << endl;
 
     int player_number = 0;
+    game.set_human(player_number);
 
     while (true)
     {
@@ -52,12 +55,39 @@ int main()
         else if (input == "draw")
         {
             cout << "Player " << player_number << " draws a tile." << endl;
-            game.player_draw(player_number);
+            game.player_draw(player_number, true);
         }
         else if (input == "discard")
         {
             cout << "Player " << player_number << " discards a tile." << endl;
             game.player_discard(player_number);
+        }
+        else if (input == "turn")
+        {
+            game.player_draw(player_number, true);
+            game.sort_player_hand(player_number);
+            game.display_player_hand(player_number);
+            game.player_discard(player_number);
+        }
+        else if (input == "full_turn")
+        {
+            std::vector<Player> players = game.get_players();
+            for (size_t current_player = 0; current_player < players.size(); current_player++)
+            {
+                cout << "Player " << current_player << "'s turn:" << endl;
+                bool broadcast = current_player == player_number;
+                game.player_draw(current_player, broadcast);
+                if (current_player == player_number)
+                {
+                    game.sort_player_hand(current_player);
+                    game.display_player_hand(current_player);
+                }
+                else
+                {
+                    game.display_visible_player_hand(current_player);
+                }
+                game.player_discard(current_player);
+            }
         }
         else
         {

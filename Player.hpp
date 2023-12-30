@@ -10,6 +10,7 @@ class Player
 {
 private:
     int playerNumber;
+    bool is_human = false;
     float money;
     Hand hand;
 
@@ -24,18 +25,35 @@ public:
         Player::hand.display_hand();
     }
 
+    void display_visible_hand()
+    {
+        Player::hand.display_visible_hand();
+    }
+
     void sort_player_hand()
     {
         Player::hand.sort();
     }
 
-    void draw_tile(Set &set)
+    void draw_tile(Set &set, bool broadcast)
     {
-        Player::hand.draw_tile(set);
+        Player::hand.draw_tile(set, broadcast);
     }
 
     void discard_tile(Discard_pile &discard_pile)
     {
-        Player::hand.discard_tile(discard_pile);
+        if (Player::is_human)
+        {
+            Player::hand.discard_tile(discard_pile);
+        }
+        else
+        {
+            Player::hand.discard_random_tile(discard_pile);
+        }
+    }
+
+    void set_human()
+    {
+        Player::is_human = true;
     }
 };

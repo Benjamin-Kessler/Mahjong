@@ -6,7 +6,7 @@
 #include "Player.hpp"
 #include "Discard_pile.hpp"
 
-int N_PLAYERS = 4;
+unsigned int N_PLAYERS = 4;
 
 class Game
 {
@@ -51,16 +51,22 @@ public:
         player.display_hand();
     }
 
+    void display_visible_player_hand(int player_number)
+    {
+        Player &player = Game::players[player_number];
+        player.display_visible_hand();
+    }
+
     void sort_player_hand(int player_number)
     {
         Player &player = Game::players[player_number];
         player.sort_player_hand();
     }
 
-    void player_draw(int player_number)
+    void player_draw(int player_number, bool broadcast)
     {
         Player &player = Game::players[player_number];
-        player.draw_tile(Game::set);
+        player.draw_tile(Game::set, broadcast);
     }
 
     void player_discard(int player_number)
@@ -77,5 +83,16 @@ public:
     void display_discard_pile()
     {
         Game::discard_pile.display_discard_pile();
+    }
+
+    void set_human(int player_number)
+    {
+        Player &player = Game::players[player_number];
+        player.set_human();
+    }
+
+    std::vector<Player> get_players()
+    {
+        return Game::players;
     }
 };

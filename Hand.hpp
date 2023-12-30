@@ -2,6 +2,7 @@
 #include <vector>
 #include <iostream>
 #include <assert.h>
+#include <random>
 
 #include "Tile.hpp"
 #include "Set.hpp"
@@ -30,16 +31,22 @@ public:
         }
     }
 
-    void draw_tile(Set &set)
+    void draw_tile(Set &set, bool broadcast)
     {
         if (Hand::tiles.size() == HAND_SIZE)
         {
             Hand::tiles.push_back(set.pop_tile());
-            std::cout << tiles.back().get_tile_as_string() << std::endl;
+            if (broadcast)
+            {
+                std::cout << "Draw tile: " << tiles.back().get_tile_as_string() << std::endl;
+            }
         }
         else
         {
-            std::cout << "Too many tiles in hand. Discard tiles first." << std::endl;
+            if (broadcast)
+            {
+                std::cout << "Too many tiles in hand. Discard tiles first." << std::endl;
+            }
         }
     }
 
@@ -67,6 +74,17 @@ public:
         }
     }
 
+    void discard_random_tile(Discard_pile &discard_pile)
+    {
+        assert(Hand::tiles.size() == HAND_SIZE + 1);
+        unsigned seed = time(0);
+        srand(seed);
+        int to_discard = std::rand() % (HAND_SIZE + 1);
+        std::cout << "Discard " << Hand::tiles[to_discard].get_tile_as_string() << std::endl;
+        discard_pile.add_discarded_tile(tiles[to_discard]);
+        Hand::tiles.erase(Hand::tiles.begin() + to_discard);
+    }
+
     int get_hand_size()
     {
         return Hand::tiles.size();
@@ -78,6 +96,19 @@ public:
         for (size_t i = 0; i < hand_size; i++)
         {
             std::cout << i << ": " << tiles[i].get_tile_as_string() << std::endl;
+        }
+    }
+
+    void display_visible_hand()
+    {
+        unsigned int hand_size = tiles.size();
+        for (size_t i = 0; i < hand_size; i++)
+        {
+            if (tiles[i].is_hidden())
+            {
+                continue;
+            }
+            std::cout << tiles[i].get_tile_as_string() << std::endl;
         }
     }
 
@@ -97,6 +128,10 @@ public:
 
     bool is_winning_hand()
     {
+        if (Hand::tiles.size() != 14)
+        {
+            return false;
+        }
         return false;
     }
 };
