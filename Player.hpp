@@ -52,6 +52,10 @@ public:
         }
     }
 
+    void call_pong(Discard_pile &Discard_pile)
+    {
+        }
+
     void set_human()
     {
         Player::is_human = true;

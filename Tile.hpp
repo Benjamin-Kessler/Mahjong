@@ -40,24 +40,24 @@ public:
         Tile::rank = rank_in;
     }
 
-    int get_rank()
+    int get_rank() const
     // Function that returns the rank of a tile.
     {
         return Tile::rank;
     }
 
-    int get_suit()
+    int get_suit() const
     // Function that returns the suit of a tile.
     {
         return Tile::suit;
     }
 
-    bool is_hidden()
+    bool is_hidden() const
     {
         return Tile::hidden;
     }
 
-    std::string get_tile_as_string()
+    std::string get_tile_as_string() const
     // Function that returns the suit and rank of a tile as a string.
     {
         std::string suit_string, rank_string;
@@ -86,5 +86,10 @@ public:
             break;
         }
         return suit_string + " " + rank_string;
+    }
+
+    bool operator==(const Tile &other) const
+    {
+        return (suit == other.suit) && (rank == other.rank);
     }
 };

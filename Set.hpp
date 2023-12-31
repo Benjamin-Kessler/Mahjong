@@ -69,7 +69,6 @@ public:
         }
         Tile tile_to_return = tiles.back();
         tiles.pop_back();
-        // std::cout << tiles.size() << std::endl;
         return tile_to_return;
     }
 };

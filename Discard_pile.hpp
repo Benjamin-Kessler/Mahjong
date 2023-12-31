@@ -21,12 +21,23 @@ public:
 
     void display_discard_pile()
     {
-        unsigned int pile_size = tiles.size();
+        unsigned int pile_size = Discard_pile::tiles.size();
         for (size_t i = 0; i < pile_size - 1; i++)
         {
-            std::cout << tiles[i].get_tile_as_string() << " -- ";
+            std::cout << Discard_pile::tiles[i].get_tile_as_string() << " -- ";
         }
 
-        std::cout << tiles[pile_size - 1].get_tile_as_string() << std::endl;
+        std::cout << Discard_pile::tiles[pile_size - 1].get_tile_as_string() << std::endl;
+    }
+
+    Tile pop_tile()
+    {
+        if (tiles.size() == 0)
+        {
+            return Tile(0, 0);
+        }
+        Tile tile_to_return = tiles.back();
+        tiles.pop_back();
+        return tile_to_return;
     }
 };

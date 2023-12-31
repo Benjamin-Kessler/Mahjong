@@ -50,6 +50,25 @@ public:
         }
     }
 
+    void pick_tile_from_discard(Discard_pile &discard_pile, bool broadcast)
+    {
+        if (Hand::tiles.size() == HAND_SIZE)
+        {
+            Hand::tiles.push_back(discard_pile.pop_tile());
+            if (broadcast)
+            {
+                std::cout << "Draw tile: " << tiles.back().get_tile_as_string() << std::endl;
+            }
+        }
+        else
+        {
+            if (broadcast)
+            {
+                std::cout << "Too many tiles in hand. Discard tiles first." << std::endl;
+            }
+        }
+    }
+
     void discard_tile(Discard_pile &discard_pile)
     {
         if (Hand::tiles.size() == HAND_SIZE + 1)
@@ -132,6 +151,74 @@ public:
         {
             return false;
         }
+        return false;
+    }
+
+    bool check_kong(const Tile &tile) const
+    {
+        if (count(Hand::tiles.begin(), Hand::tiles.end(), tile) == 4)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    bool check_pong(const Tile &tile) const
+    {
+        if (count(Hand::tiles.begin(), Hand::tiles.end(), tile) == 3)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    bool check_chow(const Tile &tile) const
+    {
+        int suitCount = 0;
+
+        // Sort the tiles by rank to facilitate finding sequences
+        std::vector<Tile> sortedTiles = tiles;
+        std::sort(sortedTiles.begin(), sortedTiles.end(), [](Tile &a, Tile &b)
+                  {
+                      if (a.get_suit() != b.get_suit())
+                      {
+                          return a.get_suit() < b.get_suit();
+                      }
+                      else
+                      {
+                          return a.get_rank() < b.get_rank();
+                      } });
+
+        for (size_t i = 0; i < sortedTiles.size(); ++i)
+        {
+            if (sortedTiles[i].get_suit() == tile.get_suit())
+            {
+                suitCount = 1;
+
+                for (size_t j = i + 1; j < sortedTiles.size(); ++j)
+                {
+                    if (sortedTiles[j].get_suit() != tile.get_suit())
+                    {
+                        break;
+                    }
+
+                    if (sortedTiles[j].get_rank() == sortedTiles[i].get_rank() + 1)
+                    {
+                        ++suitCount;
+
+                        if (suitCount == 3)
+                        {
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
         return false;
     }
 };
