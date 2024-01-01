@@ -40,7 +40,7 @@ public:
         }
     }
 
-    int get_size()
+    int get_size() const
     {
         return tiles.size();
     }
@@ -51,15 +51,15 @@ public:
         std::shuffle(tiles.begin(), tiles.end(), std::default_random_engine(seed));
     }
 
-    Tile get_tile()
-    {
-        if (tiles.size() == 0)
-        {
-            return Tile(0, 0);
-        }
+    // Tile get_tile()
+    // {
+    //     if (tiles.size() == 0)
+    //     {
+    //         return Tile(0, 0);
+    //     }
 
-        return tiles.back();
-    }
+    //     return tiles.back();
+    // }
 
     Tile pop_tile()
     {

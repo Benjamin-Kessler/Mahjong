@@ -9,7 +9,7 @@
 #include "Game.hpp"
 #include "Discard_pile.hpp"
 
-int HAND_SIZE = 13;
+const unsigned int HAND_SIZE = 13;
 
 class Hand
 {
@@ -76,7 +76,7 @@ public:
             int to_discard;
             std::cout << "Select which tile to discard:" << std::endl;
             std::cin >> to_discard;
-            if (0 <= to_discard < HAND_SIZE + 1)
+            if (0 <= to_discard && to_discard < HAND_SIZE + 1)
             {
                 std::cout << "Discard " << Hand::tiles[to_discard].get_tile_as_string() << std::endl;
                 discard_pile.add_discarded_tile(tiles[to_discard]);
@@ -95,24 +95,23 @@ public:
 
     void discard_random_tile(Discard_pile &discard_pile)
     {
-        assert(Hand::tiles.size() == HAND_SIZE + 1);
+        assert(tiles.size() == HAND_SIZE + 1);
         unsigned seed = time(0);
         srand(seed);
         int to_discard = std::rand() % (HAND_SIZE + 1);
-        std::cout << "Discard " << Hand::tiles[to_discard].get_tile_as_string() << std::endl;
+        std::cout << "Discard " << tiles[to_discard].get_tile_as_string() << std::endl;
         discard_pile.add_discarded_tile(tiles[to_discard]);
-        Hand::tiles.erase(Hand::tiles.begin() + to_discard);
+        tiles.erase(tiles.begin() + to_discard);
     }
 
     int get_hand_size()
     {
-        return Hand::tiles.size();
+        return tiles.size();
     }
 
     void display_hand()
     {
-        unsigned int hand_size = tiles.size();
-        for (size_t i = 0; i < hand_size; i++)
+        for (size_t i = 0; i < tiles.size(); i++)
         {
             std::cout << i << ": " << tiles[i].get_tile_as_string() << std::endl;
         }
@@ -156,20 +155,12 @@ public:
 
     bool check_kong(const Tile &tile) const
     {
-        if (count(Hand::tiles.begin(), Hand::tiles.end(), tile) == 4)
-        {
-            return true;
-        }
-        return false;
+        return std::count(Hand::tiles.begin(), Hand::tiles.end(), tile) == 4;
     }
 
     bool check_pong(const Tile &tile) const
     {
-        if (count(Hand::tiles.begin(), Hand::tiles.end(), tile) == 3)
-        {
-            return true;
-        }
-        return false;
+        return std::count(Hand::tiles.begin(), Hand::tiles.end(), tile) == 3;
     }
 
     bool check_chow(const Tile &tile) const

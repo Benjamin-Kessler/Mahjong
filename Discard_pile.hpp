@@ -19,7 +19,7 @@ public:
         Discard_pile::tiles.push_back(tile);
     }
 
-    void display_discard_pile()
+    void display_discard_pile() const
     {
         unsigned int pile_size = Discard_pile::tiles.size();
         for (size_t i = 0; i < pile_size - 1; i++)

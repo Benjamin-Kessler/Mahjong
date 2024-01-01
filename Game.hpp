@@ -12,20 +12,20 @@ class Game
 {
 private:
     int id;
+    bool running;
     std::vector<Player> players;
     Set set;
     Discard_pile discard_pile;
 
 public:
-    Game(int id)
+    Game(int id_in) : id(id_in), running(true)
     {
-        Game::id = id;
         std::cout << "Initiated Game with ID " << id << std::endl;
 
-        Game::discard_pile = Discard_pile();
+        discard_pile = Discard_pile();
 
-        Game::set = Set();
-        Game::set.shuffle();
+        set = Set();
+        set.shuffle();
         std::cout
             << "Number of tiles in set: " << set.get_size() << std::endl;
 

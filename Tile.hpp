@@ -14,31 +14,23 @@ private:
     bool hidden = true;
 
 public:
-    Tile()
-    // Function that creates a random tile.
+    Tile() : suit(std::rand() % 5)
     {
-        // Get random suit and random rank according to the given possibilities for each suit.
-        Tile::suit = std::rand() % (int)(5);
-        if (Tile::suit == 3)
+        if (suit == 3)
         {
-            Tile::rank = std::rand() % (int)(4);
+            rank = std::rand() % 4;
         }
         else if (suit == 4)
         {
-            Tile::rank = std::rand() % (int)(3);
+            rank = std::rand() % 3;
         }
         else
         {
-            Tile::rank = std::rand() % (int)(9);
+            rank = std::rand() % 9;
         }
     }
 
-    Tile(int suit_in, int rank_in)
-    // Function that creates a tile which corresponds to the given integers.
-    {
-        Tile::suit = suit_in;
-        Tile::rank = rank_in;
-    }
+    Tile(int suit_in, int rank_in) : suit(suit_in), rank(rank_in) {}
 
     int get_rank() const
     // Function that returns the rank of a tile.

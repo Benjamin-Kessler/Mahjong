@@ -93,6 +93,10 @@ int main()
                 game.player_discard(current_player);
             }
         }
+        else if (input == "game")
+        {
+            cout << "Hello";
+        }
         else
         {
             cout << "Unknown input " << input << endl;
