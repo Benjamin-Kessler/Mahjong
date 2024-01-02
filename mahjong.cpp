@@ -95,7 +95,18 @@ int main()
         }
         else if (input == "game")
         {
-            cout << "Hello";
+            unsigned int current_player;
+            bool broadcast;
+            while (game.is_running())
+            {
+                current_player = game.get_current_player();
+                cout << "Player " << current_player << "'s turn:" << endl;
+                broadcast = current_player == player_number;
+                game.player_turn(current_player, broadcast);
+                current_player = (current_player + 1) % N_PLAYERS;
+                game.set_current_player(current_player);
+            }
+            // cout << game.is_running();
         }
         else
         {

@@ -4,6 +4,8 @@
 #include <assert.h>
 #include <algorithm>
 #include <random>
+#include <map>
+#include <string>
 
 #include "Tile.hpp"
 #include "Set.hpp"
@@ -212,5 +214,13 @@ public:
         }
 
         return false;
+    }
+
+    void check_valid_pickup(const Tile &tile) const
+    {
+        std::map<std::string, bool> actions;
+        actions["kong"] = check_kong(tile);
+        actions["pong"] = check_pong(tile);
+        actions["chow"] = check_chow(tile);
     }
 };

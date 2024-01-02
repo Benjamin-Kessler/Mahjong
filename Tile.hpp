@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 std::string dragons[3] = {"Red", "Green", "White"};
 std::string winds[4] = {"East", "South", "West", "North"};
