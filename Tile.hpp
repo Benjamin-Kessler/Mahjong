@@ -85,4 +85,9 @@ public:
     {
         return (suit == other.suit) && (rank == other.rank);
     }
+
+    void set_visible()
+    {
+        hidden = false;
+    }
 };

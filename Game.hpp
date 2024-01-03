@@ -73,10 +73,12 @@ public:
         player.draw_tile(Game::set, broadcast);
     }
 
-    void player_pick_from_discard(unsigned int player_number)
+    void player_pick_from_discard(unsigned int player_number, std::string action)
     {
         Player &player = Game::players[player_number];
+        Tile tile_to_pickup = Game::discard_pile.back();
         player.pick_tile_from_discard(Game::discard_pile);
+        player.reveal_combination(tile_to_pickup, action);
     }
 
     void player_discard(unsigned int player_number)

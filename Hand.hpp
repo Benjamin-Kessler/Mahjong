@@ -149,14 +149,57 @@ public:
         return false;
     }
 
+    std::vector<Tile> get_hidden_hand() const
+    {
+        std::vector<Tile> hidden_hand = {};
+        for (size_t i = 0; i < Hand::tiles.size(); i++)
+        {
+            if (Hand::tiles[i].is_hidden())
+            {
+                hidden_hand.push_back(Hand::tiles[i]);
+            }
+        }
+        return hidden_hand;
+    }
+
+    void reveal_combination(Tile tile, std::string action)
+    {
+        if (action == "kong")
+        {
+            auto it = tiles.begin();
+            while (it != tiles.end())
+            {
+                it = std::find(it, tiles.end(), tile);
+                auto pos = std::distance(tiles.begin(), it);
+                Tile &tile = tiles[pos];
+                tile.set_visible();
+            }
+        }
+        else if (action == "pong")
+        {
+            auto it = tiles.begin();
+            unsigned int n_matches = 0;
+            while (it != tiles.end() && n_matches < 3)
+            {
+                it = std::find(it, tiles.end(), tile);
+                auto pos = std::distance(tiles.begin(), it);
+                Tile &tile = tiles[pos];
+                tile.set_visible();
+                n_matches += 1;
+            }
+        }
+    }
+
     bool check_kong(const Tile tile) const
     {
-        return std::count(Hand::tiles.begin(), Hand::tiles.end(), tile) == 3;
+        std::vector<Tile> hidden_hand = get_hidden_hand();
+        return std::count(hidden_hand.begin(), hidden_hand.end(), tile) == 3;
     }
 
     bool check_pong(const Tile tile) const
     {
-        return std::count(Hand::tiles.begin(), Hand::tiles.end(), tile) == 2;
+        std::vector<Tile> hidden_hand = get_hidden_hand();
+        return std::count(hidden_hand.begin(), hidden_hand.end(), tile) == 2;
     }
 
     bool check_chow(const Tile tile) const
@@ -164,7 +207,7 @@ public:
         int suitCount = 0;
 
         // Sort the tiles by rank to facilitate finding sequences
-        std::vector<Tile> sortedTiles = tiles;
+        std::vector<Tile> sortedTiles = get_hidden_hand();
         std::sort(sortedTiles.begin(), sortedTiles.end(), [](Tile &a, Tile &b)
                   {
                       if (a.get_suit() != b.get_suit())

@@ -119,9 +119,10 @@ int main()
                 if (get<1>(pickup_tuple) != "none")
                 {
                     current_player = get<0>(pickup_tuple);
+                    std::string action = get<1>(pickup_tuple);
                     broadcast = current_player == player_number;
-                    std::cout << "Player " << current_player << " performs " << get<1>(pickup_tuple) << "." << std::endl;
-                    game.player_pick_from_discard(current_player);
+                    std::cout << "Player " << current_player << " performs " << action << "." << std::endl;
+                    game.player_pick_from_discard(current_player, action);
                     if (broadcast)
                     {
                         game.sort_player_hand(current_player);

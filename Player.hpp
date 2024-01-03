@@ -96,4 +96,9 @@ public:
     {
         Player::is_human = true;
     }
+
+    void reveal_combination(Tile tile, std::string action)
+    {
+        Player::hand.reveal_combination(tile, action);
+    }
 };
