@@ -27,7 +27,7 @@ public:
         }
         else
         {
-            rank = std::rand() % 9;
+            rank = std::rand() % 9 + 1;
         }
     }
 

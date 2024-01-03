@@ -40,7 +40,7 @@ int main()
         }
         else if (input == "set")
         {
-            cout << "Set size " << game.set_size() << endl;
+            cout << "Set size " << game.get_set_size() << endl;
         }
         else if (input == "pile")
         {
@@ -102,9 +102,44 @@ int main()
                 current_player = game.get_current_player();
                 cout << "Player " << current_player << "'s turn:" << endl;
                 broadcast = current_player == player_number;
+                if (current_player == player_number && game.get_pile_size() > 0)
+                {
+                    game.display_discard_pile();
+                }
                 game.player_turn(current_player, broadcast);
+                std::vector<std::string> player_actions = {};
+                for (size_t i = 0; i < N_PLAYERS; i++)
+                {
+                    // std::cout << "Player " << i << " is checking pickup actions..." << std::endl;
+                    std::string player_action = game.player_choose_pickup_action(i, current_player);
+                    player_actions.push_back(player_action);
+                    // std::cout << "Player " << i << " chooses " << player_action << std::endl;
+                }
+                std::tuple<int, std::string> pickup_tuple = game.prioritize_pickup_action(player_actions);
+                if (get<1>(pickup_tuple) != "none")
+                {
+                    current_player = get<0>(pickup_tuple);
+                    broadcast = current_player == player_number;
+                    std::cout << "Player " << current_player << " performs " << get<1>(pickup_tuple) << "." << std::endl;
+                    game.player_pick_from_discard(current_player);
+                    if (broadcast)
+                    {
+                        game.sort_player_hand(current_player);
+                        game.display_player_hand(current_player);
+                    }
+                    game.player_discard(current_player);
+                    game.set_current_player(get<0>(pickup_tuple) + 1);
+                }
+
                 current_player = (current_player + 1) % N_PLAYERS;
                 game.set_current_player(current_player);
+
+                std::cout << "" << std::endl;
+
+                if (game.get_set_size() == 0)
+                {
+                    game.finish();
+                }
             }
             // cout << game.is_running();
         }

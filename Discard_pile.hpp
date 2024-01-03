@@ -40,4 +40,14 @@ public:
         tiles.pop_back();
         return tile_to_return;
     }
+
+    Tile back() const
+    {
+        return tiles.back();
+    }
+
+    unsigned int get_size() const
+    {
+        return tiles.size();
+    }
 };

@@ -53,22 +53,15 @@ public:
         }
     }
 
-    void pick_tile_from_discard(Discard_pile &discard_pile, bool broadcast)
+    void pick_tile_from_discard(Discard_pile &discard_pile)
     {
         if (Hand::tiles.size() == HAND_SIZE)
         {
             Hand::tiles.push_back(discard_pile.pop_tile());
-            if (broadcast)
-            {
-                std::cout << "Draw tile: " << tiles.back().get_tile_as_string() << std::endl;
-            }
         }
         else
         {
-            if (broadcast)
-            {
-                std::cout << "Too many tiles in hand. Discard tiles first." << std::endl;
-            }
+            std::cout << "Too many tiles in hand. Discard tiles first." << std::endl;
         }
     }
 
@@ -156,17 +149,17 @@ public:
         return false;
     }
 
-    bool check_kong(const Tile &tile) const
-    {
-        return std::count(Hand::tiles.begin(), Hand::tiles.end(), tile) == 4;
-    }
-
-    bool check_pong(const Tile &tile) const
+    bool check_kong(const Tile tile) const
     {
         return std::count(Hand::tiles.begin(), Hand::tiles.end(), tile) == 3;
     }
 
-    bool check_chow(const Tile &tile) const
+    bool check_pong(const Tile tile) const
+    {
+        return std::count(Hand::tiles.begin(), Hand::tiles.end(), tile) == 2;
+    }
+
+    bool check_chow(const Tile tile) const
     {
         int suitCount = 0;
 
@@ -216,11 +209,25 @@ public:
         return false;
     }
 
-    void check_valid_pickup(const Tile &tile) const
+    std::vector<std::string> check_available_actions(const Discard_pile &discard_pile, unsigned int player_number, int current_player) const
     {
-        std::map<std::string, bool> actions;
-        actions["kong"] = check_kong(tile);
-        actions["pong"] = check_pong(tile);
-        actions["chow"] = check_chow(tile);
+        std::vector<std::string> available_actions = {};
+        Tile tile = discard_pile.back();
+        // std::cout << "Check available actions with " << tile.get_tile_as_string() << std::endl;
+        // std::cout << player_number << " - " << (current_player + 1) % 4 << std::endl;
+        if (check_kong(tile))
+        {
+            available_actions.push_back("kong");
+        }
+        else if (check_pong(tile))
+        {
+            available_actions.push_back("pong");
+        }
+        else if (check_chow(tile) && (player_number == ((current_player + 1) % 4)))
+
+        {
+            available_actions.push_back("chow");
+        }
+        return available_actions;
     }
 };

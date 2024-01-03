@@ -1,6 +1,9 @@
 #pragma once
+#include <algorithm>
+#include <string>
 #include <vector>
 #include <iostream>
+#include <tuple>
 
 #include "Set.hpp"
 #include "Player.hpp"
@@ -70,10 +73,42 @@ public:
         player.draw_tile(Game::set, broadcast);
     }
 
+    void player_pick_from_discard(unsigned int player_number)
+    {
+        Player &player = Game::players[player_number];
+        player.pick_tile_from_discard(Game::discard_pile);
+    }
+
     void player_discard(unsigned int player_number)
     {
         Player &player = Game::players[player_number];
         player.discard_tile(Game::discard_pile);
+    }
+
+    std::string player_choose_pickup_action(unsigned int player_number, unsigned int current_player)
+    {
+        Player &player = Game::players[player_number];
+        return player.choose_pickup_action(Game::discard_pile, current_player);
+    }
+
+    std::tuple<int, std::string> prioritize_pickup_action(std::vector<std::string> player_actions)
+    {
+        auto index = std::find(player_actions.begin(), player_actions.end(), "kong") - player_actions.begin();
+        if (index < player_actions.size())
+        {
+            return std::make_tuple(static_cast<int>(index), "kong");
+        }
+        index = std::find(player_actions.begin(), player_actions.end(), "pong") - player_actions.begin();
+        if (index < player_actions.size())
+        {
+            return std::make_tuple(static_cast<int>(index), "pong");
+        }
+        index = std::find(player_actions.begin(), player_actions.end(), "chow") - player_actions.begin();
+        if (index < player_actions.size())
+        {
+            return std::make_tuple(static_cast<int>(index), "chow");
+        }
+        return std::make_tuple(-1, "none");
     }
 
     void player_turn(unsigned int player_number, bool broadcast)
@@ -89,15 +124,20 @@ public:
             display_visible_player_hand(player_number);
         }
         player_discard(player_number);
-        display_discard_pile();
+        // display_discard_pile();
     }
 
-    int set_size()
+    int get_set_size() const
     {
         return Game::set.get_size();
     }
 
-    void display_discard_pile()
+    unsigned int get_pile_size() const
+    {
+        return Game::discard_pile.get_size();
+    }
+
+    void display_discard_pile() const
     {
         Game::discard_pile.display_discard_pile();
     }
@@ -108,7 +148,7 @@ public:
         player.set_human();
     }
 
-    std::vector<Player> get_players()
+    std::vector<Player> get_players() const
     {
         return Game::players;
     }
@@ -116,6 +156,11 @@ public:
     bool is_running() const
     {
         return running;
+    }
+
+    void finish()
+    {
+        running = false;
     }
 
     unsigned int get_current_player() const
