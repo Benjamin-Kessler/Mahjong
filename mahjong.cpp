@@ -97,48 +97,61 @@ int main()
         {
             unsigned int current_player;
             bool broadcast;
+
+            // First turn
+            current_player = game.get_current_player();
+            cout << "Player " << current_player << "'s turn:" << endl;
+            broadcast = (current_player == player_number);
+            game.player_turn(current_player, broadcast);
+            std::cout << "" << std::endl;
+
             while (game.is_running())
             {
-                current_player = game.get_current_player();
-                cout << "Player " << current_player << "'s turn:" << endl;
-                broadcast = current_player == player_number;
-                if (current_player == player_number && game.get_pile_size() > 0)
-                {
-                    game.display_discard_pile();
-                }
-                game.player_turn(current_player, broadcast);
-                std::vector<std::string> player_actions = {};
-                for (size_t i = 0; i < N_PLAYERS; i++)
-                {
-                    // std::cout << "Player " << i << " is checking pickup actions..." << std::endl;
-                    std::string player_action = game.player_choose_pickup_action(i, current_player);
-                    player_actions.push_back(player_action);
-                    // std::cout << "Player " << i << " chooses " << player_action << std::endl;
-                }
-                std::tuple<int, std::string> pickup_tuple = game.prioritize_pickup_action(player_actions);
-                if (get<1>(pickup_tuple) != "none")
+                // Check if any pickup actions are performed.
+                std::tuple<int, std::string> pickup_tuple = game.pickup_action(current_player);
+                std::string action = get<1>(pickup_tuple);
+
+                if (action != "none")
                 {
                     current_player = get<0>(pickup_tuple);
-                    std::string action = get<1>(pickup_tuple);
-                    broadcast = current_player == player_number;
+                    broadcast = (current_player == player_number);
                     std::cout << "Player " << current_player << " performs " << action << "." << std::endl;
                     game.player_pick_from_discard(current_player, action);
                     if (broadcast)
                     {
+                        std::cout << "Yes broadcast" << std::endl;
                         game.sort_player_hand(current_player);
                         game.display_player_hand(current_player);
                     }
+                    else
+                    {
+                        std::cout << "No broadcast" << std::endl;
+                        game.display_visible_player_hand(current_player);
+                    }
                     game.player_discard(current_player);
-                    game.set_current_player(get<0>(pickup_tuple) + 1);
+                    game.set_current_player(get<0>(pickup_tuple));
+                }
+                else
+                {
+                    // std::cout << "No actions performed." << std::endl;
+                    current_player = (current_player + 1) % N_PLAYERS;
+                    game.set_current_player(current_player);
+                    broadcast = (current_player == player_number);
+
+                    cout << "Player " << current_player << "'s turn:" << endl;
+                    game.player_turn(current_player, broadcast);
                 }
 
-                current_player = (current_player + 1) % N_PLAYERS;
-                game.set_current_player(current_player);
+                if (current_player == player_number && game.get_pile_size() > 0)
+                {
+                    game.display_discard_pile();
+                }
 
                 std::cout << "" << std::endl;
 
                 if (game.get_set_size() == 0)
                 {
+                    std::cout << "Game finished due to running out of tiles." << std::endl;
                     game.finish();
                 }
             }

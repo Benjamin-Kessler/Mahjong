@@ -94,7 +94,13 @@ public:
         assert(tiles.size() == HAND_SIZE + 1);
         unsigned seed = time(0);
         srand(seed);
-        int to_discard = std::rand() % (HAND_SIZE + 1);
+        unsigned int to_discard;
+        bool valid_discard = false;
+        while (valid_discard == false)
+        {
+            to_discard = std::rand() % (HAND_SIZE + 1);
+            valid_discard = tiles[to_discard].is_hidden();
+        }
         std::cout << "Discard " << tiles[to_discard].get_tile_as_string() << std::endl;
         discard_pile.add_discarded_tile(tiles[to_discard]);
         tiles.erase(tiles.begin() + to_discard);
@@ -113,17 +119,20 @@ public:
         }
     }
 
-    void display_visible_hand()
+    void display_visible_hand() const
     {
         unsigned int hand_size = tiles.size();
+        std::cout << "Known tiles: " << std::endl;
         for (size_t i = 0; i < hand_size; i++)
         {
             if (tiles[i].is_hidden())
             {
                 continue;
             }
-            std::cout << tiles[i].get_tile_as_string() << std::endl;
+
+            std::cout << tiles[i].get_tile_as_string() << "  ";
         }
+        std::cout << std::endl;
     }
 
     void sort()
@@ -172,7 +181,9 @@ public:
                 it = std::find(it, tiles.end(), tile);
                 auto pos = std::distance(tiles.begin(), it);
                 Tile &tile = tiles[pos];
+                // std::cout << "Visisble: " << pos << " - " << tile.get_tile_as_string() << std::endl;
                 tile.set_visible();
+                it++;
             }
         }
         else if (action == "pong")
@@ -185,7 +196,9 @@ public:
                 auto pos = std::distance(tiles.begin(), it);
                 Tile &tile = tiles[pos];
                 tile.set_visible();
+                std::cout << "Visisble: " << pos << " - " << tile.get_tile_as_string() << std::endl;
                 n_matches += 1;
+                it++;
             }
         }
     }
