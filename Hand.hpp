@@ -70,17 +70,30 @@ public:
         if (Hand::tiles.size() == HAND_SIZE + 1)
         {
             int to_discard;
-            std::cout << "Select which tile to discard:" << std::endl;
-            std::cin >> to_discard;
-            if (0 <= to_discard && to_discard < HAND_SIZE + 1)
+            bool valid_discard_tile = false;
+
+            while (!valid_discard_tile)
             {
-                std::cout << "Discard " << Hand::tiles[to_discard].get_tile_as_string() << std::endl;
-                discard_pile.add_discarded_tile(tiles[to_discard]);
-                Hand::tiles.erase(Hand::tiles.begin() + to_discard);
-            }
-            else
-            {
-                std::cout << "Invalid number. Choice must be between 0 and 13.";
+                std::cout << "Select which tile to discard:" << std::endl;
+                std::cin >> to_discard;
+                if (0 <= to_discard && to_discard < HAND_SIZE + 1)
+                {
+                    if (Hand::tiles[to_discard].is_hidden())
+                    {
+                        std::cout << "Discard " << Hand::tiles[to_discard].get_tile_as_string() << std::endl;
+                        discard_pile.add_discarded_tile(tiles[to_discard]);
+                        Hand::tiles.erase(Hand::tiles.begin() + to_discard);
+                        valid_discard_tile = true;
+                    }
+                    else
+                    {
+                        std::cout << "Chosen tile must be hidden." << std::endl;
+                    }
+                }
+                else
+                {
+                    std::cout << "Invalid number. Choice must be between 0 and 13." << std::endl;
+                }
             }
         }
         else
@@ -109,7 +122,7 @@ public:
     {
         for (size_t i = 0; i < tiles.size(); i++)
         {
-            std::cout << i << ": " << tiles[i].get_tile_as_string() << std::endl;
+            std::cout << i << ": " << tiles[i].get_tile_as_string_with_visibility() << std::endl;
         }
     }
 
