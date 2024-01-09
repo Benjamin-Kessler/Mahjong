@@ -113,6 +113,25 @@ public:
         return std::make_tuple(-1, "none");
     }
 
+    std::tuple<int, std::string> pickup_action(unsigned int current_player)
+    {
+        std::vector<std::string> player_actions = {};
+        for (size_t i = 0; i < Game::players.size(); i++)
+        {
+            if (i == current_player)
+            {
+                player_actions.push_back("none");
+            }
+            else
+            {
+                std::string player_action = player_choose_pickup_action(i, current_player);
+                player_actions.push_back(player_action);
+            }
+        }
+        std::tuple<int, std::string> pickup_tuple = prioritize_pickup_action(player_actions);
+        return pickup_tuple;
+    }
+
     void player_turn(unsigned int player_number, bool broadcast)
     {
         player_draw(player_number, broadcast);
