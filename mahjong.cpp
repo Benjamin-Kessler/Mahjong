@@ -20,11 +20,6 @@ int main()
 
     Game game = Game(46);
 
-    // cout << "Choose Player" << endl;
-    // int player_number;
-    // cin >> player_number;
-    // cout << "Welcome Player " << player_number << endl;
-
     int player_number = 0;
     game.set_human(player_number);
 

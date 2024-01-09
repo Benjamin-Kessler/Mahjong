@@ -66,9 +66,7 @@ public:
         // std::cout << player_number << ", " << is_human << ", " << available_actions.size() << std::endl;
         if (is_human && available_actions.size() > 0)
         {
-            std::
-                    cout
-                << "Available actions:" << std::endl;
+            std::cout << "Available actions:" << std::endl;
             for (size_t i = 0; i < available_actions.size(); i++)
             {
                 std::cout << i << ": " << available_actions[i] << std ::endl;
