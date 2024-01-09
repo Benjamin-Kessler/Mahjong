@@ -18,7 +18,7 @@ int main()
 {
     srand(time(NULL));
 
-    Game game = Game(46);
+    Mahjong::Game game = Mahjong::Game(46);
 
     int player_number = 0;
     game.set_human(player_number);
@@ -70,7 +70,7 @@ int main()
         }
         else if (input == "full_turn")
         {
-            std::vector<Player> players = game.get_players();
+            std::vector<Mahjong::Player> players = game.get_players();
             for (size_t current_player = 0; current_player < players.size(); current_player++)
             {
                 cout << "Player " << current_player << "'s turn:" << endl;
@@ -114,13 +114,13 @@ int main()
                     game.player_pick_from_discard(current_player, action);
                     if (broadcast)
                     {
-                        std::cout << "Yes broadcast" << std::endl;
+                        // std::cout << "Yes broadcast" << std::endl;
                         game.sort_player_hand(current_player);
                         game.display_player_hand(current_player);
                     }
                     else
                     {
-                        std::cout << "No broadcast" << std::endl;
+                        // std::cout << "No broadcast" << std::endl;
                         game.display_visible_player_hand(current_player);
                     }
                     game.player_discard(current_player);
