@@ -160,5 +160,18 @@ namespace Mahjong
         {
             hand.reveal_combination(tile, action);
         }
+
+        /**
+         * @brief Check if this player's hand is a winning Mahjong hand.
+         *
+         * This function checks if the specified player has a winning Mahjong hand by calling the
+         * `is_winning_hand` method of the Hand class. If the player has a winning hand, a message
+         * is displayed indicating the winning status, and the game is set to a non-running state.
+         *
+         */
+        bool has_winning_hand()
+        {
+            return hand.is_winning_hand();
+        }
     };
 } // namespace Mahjong

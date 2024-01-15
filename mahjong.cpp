@@ -123,7 +123,9 @@ int main()
                         // std::cout << "No broadcast" << std::endl;
                         game.display_visible_player_hand(current_player);
                     }
-                    game.player_discard(current_player);
+                    game.player_has_winning_hand(current_player);
+                    if (game.is_running())
+                        game.player_discard(current_player);
                     game.set_current_player(get<0>(pickup_tuple));
                 }
                 else
@@ -142,7 +144,7 @@ int main()
                     game.display_discard_pile();
                 }
 
-                std::cout << "" << std::endl;
+                std::cout << "\n";
 
                 if (game.get_set_size() == 0)
                 {

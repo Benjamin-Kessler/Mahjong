@@ -376,7 +376,7 @@ namespace DLX
             {
                 for (int value : subset)
                 {
-                    prob_matrix[current_row][value - 1] = true;
+                    prob_matrix[current_row][value] = true;
                 }
                 current_row++;
             }
@@ -396,15 +396,15 @@ namespace DLX
  */
 int main()
 {
-    std::vector<std::set<int>> sets = {{1, 4, 7},
-                                       {1, 4},
-                                       {4, 5, 7},
-                                       {3, 5, 6},
-                                       {2, 3, 6, 7},
-                                       {2, 7},
-                                       {1, 4},
-                                       {1, 2},
-                                       {1, 2, 3}};
+    std::vector<std::set<int>> sets = {{0, 3, 6},
+                                       {0, 3},
+                                       {3, 4, 6},
+                                       {2, 4, 5},
+                                       {1, 2, 5, 6},
+                                       {1, 6},
+                                       {0, 3},
+                                       {0, 1},
+                                       {0, 1, 2}};
 
     DLX::exact_cover_solver ecs = DLX::exact_cover_solver();
 

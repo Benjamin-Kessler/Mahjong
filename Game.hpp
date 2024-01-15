@@ -208,6 +208,25 @@ namespace Mahjong
         }
 
         /**
+         * @brief Check if a player has a winning Mahjong hand.
+         *
+         * This function checks if the specified player has a winning Mahjong hand by calling the
+         * `has_winning_hand` method of the Player class. If the player has a winning hand, a message
+         * is displayed indicating the winning status, and the game is set to a non-running state.
+         *
+         * @param player_number The player number to check for a winning hand.
+         */
+        void player_has_winning_hand(unsigned int player_number)
+        {
+            Player &player = players[player_number];
+            if (player.has_winning_hand())
+            {
+                std::cout << "Player " << player_number << " has a winning hand. Congratulations." << std::endl;
+                running = false;
+            }
+        }
+
+        /**
          * @brief Simulates a player's turn, including drawing, sorting, and discarding.
          * @param player_number Index of the player.
          * @param broadcast Indicates whether the turn should be broadcasted.
@@ -217,14 +236,13 @@ namespace Mahjong
             player_draw(player_number, broadcast);
             sort_player_hand(player_number);
             if (broadcast)
-            {
                 display_player_hand(player_number);
-            }
             else
-            {
                 display_visible_player_hand(player_number);
-            }
-            player_discard(player_number);
+
+            player_has_winning_hand(player_number);
+            if (running)
+                player_discard(player_number);
         }
 
         /**

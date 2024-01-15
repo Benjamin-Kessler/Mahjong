@@ -8,6 +8,7 @@
 #include <iostream>
 #include <assert.h>
 #include <algorithm>
+#include <set>
 #include <random>
 #include <map>
 #include <string>
@@ -16,6 +17,7 @@
 #include "Set.hpp"
 #include "Game.hpp"
 #include "Discard_pile.hpp"
+#include "dlx_exact_cover_solver.hpp"
 
 /** @brief Initial number of tiles in hand. */
 const unsigned int HAND_SIZE = 13;
@@ -44,6 +46,15 @@ namespace Mahjong
          * Initializes the `tiles` vector to an empty state.
          */
         Hand() : tiles() {}
+
+        Hand(std::vector<std::pair<unsigned int, unsigned int>> input_tiles)
+        {
+            tiles = {};
+            for (auto tile : input_tiles)
+            {
+                tiles.push_back(Mahjong::Tile(tile.first, tile.second));
+            }
+        }
 
         /**
          * @brief Draws a complete hand from the given tile set.
@@ -235,20 +246,84 @@ namespace Mahjong
                       } });
         }
 
+        void print_combinations(std::vector<std::set<int>> combinations)
+        {
+            for (auto set : combinations)
+            {
+                for (int value : set)
+                    std::cout << value << " ";
+                std::cout << "\n";
+            }
+        }
+
         /**
-         * @brief Checks if the current hand is a winning one, i.e., if mahjong can be called.
-         * @return True if the current hand is a winning hand, false otherwise.
+         * @brief Check if the current hand is a winning Mahjong hand.
+         *
+         * This function determines if the given set of tiles forms a winning Mahjong hand.
+         * The hand must consist of 14 tiles, contain at least one pair, and have enough combinations
+         * to form an exact cover using Knuth's algorithm X. A winning hand is defined as an exact cover
+         * of 5 combinations, with at least one of the combinations being a pair.
+         *
+         * @return True if the hand is a winning Mahjong hand, false otherwise.
          */
         bool is_winning_hand()
         {
+            std::cout << "Checking winning hand...\n";
+            // Early abort of computations if not enough tiles in hand.
             if (tiles.size() != 14)
             {
+                std::cout << "Not enough tiles in hand.\n";
                 return false;
             }
-            if (get_hidden_hand().size() == 0)
+
+            // Early abort of computations if no pair in hand.
+            if (get_pairs().size() == 0)
             {
-                return true;
+                std::cout << "No pair in hand.\n";
+                return false;
             }
+
+            std::cout << "Computing combinations...\n";
+            std::vector<std::set<int>> combinations = get_combinations();
+
+            // Early abort of computations if not enough combinations on hand to win.
+            if (combinations.size() < 5)
+            {
+                std::cout << "Not enough combinations in hand.\n";
+                return false;
+            }
+
+            // Early abort of computations if not all tiles are in at least one combination.
+            std::set<int> used_tiles;
+            for (std::set<int> combination : combinations)
+            {
+                used_tiles.insert(combination.begin(), combination.end());
+            }
+            if (used_tiles.size() != HAND_SIZE + 1)
+            {
+                std::cout << "Not all tiles included in at least one combination.\n";
+                return false;
+            }
+
+            // Find all exact covers (i.e. a set of combinations such that each tile is in exactly one combination).
+            std::cout << "Computing covers...\n";
+            DLX::exact_cover_solver ecs = DLX::exact_cover_solver();
+            std::vector<std::set<int>> covers = ecs.find_exact_covers(combinations);
+            print_combinations(covers);
+
+            // Check if there is a winning cover, i.e. an exact cover of 5 combinations and containing at least one pair.
+            for (std::set<int> cover : covers)
+            {
+                if (cover.size() == 5)
+                {
+                    for (int index : cover)
+                    {
+                        if (combinations[index].size() == 2)
+                            return true;
+                    }
+                }
+            }
+            std::cout << "Not the right covers in hand.\n";
             return false;
         }
 
@@ -307,6 +382,156 @@ namespace Mahjong
                     it++;
                 }
             }
+        }
+
+        /**
+         * @brief Find all index positions of pairs currently in hand.
+         * @return Vector of sets of indices representing the positions of two identical tiles.
+         */
+        std::vector<std::set<int>> get_pairs()
+        {
+            std::vector<std::set<int>> pairs;
+
+            // Iterate through the vector
+            for (int i = 0; i < tiles.size(); ++i)
+            {
+                for (int j = i + 1; j < tiles.size(); ++j)
+                {
+                    // Check if the tiles are identical
+                    if (tiles[i] == tiles[j])
+                    {
+                        std::set<int> pair = {i, j};
+                        pairs.push_back(pair);
+                    }
+                }
+            }
+
+            return pairs;
+        }
+
+        /**
+         * @brief Find all index positions of chows (three tiles of suit bamboo, character or circles of increasing ranks)
+         * currently in hand.
+         * @return Vector of sets of indices representing the positions of three tiles forming a chow.
+         */
+        std::vector<std::set<int>> get_chows()
+        {
+            std::vector<std::set<int>> chows;
+
+            // Iterate through the vector
+            for (int i = 0; i < tiles.size(); ++i)
+            {
+                if (tiles[i].get_suit() == 3 || tiles[i].get_suit() == 3)
+                    continue;
+                for (int j = i + 1; j < tiles.size(); ++j)
+                {
+                    if (tiles[i].get_suit() != tiles[j].get_suit())
+                        continue;
+                    for (int k = j + 1; k < tiles.size(); k++)
+                    {
+                        if (tiles[j].get_suit() != tiles[k].get_suit())
+                            continue;
+                        // Check if the tiles are identical
+                        int arr[] = {tiles[i].get_rank(), tiles[j].get_rank(), tiles[k].get_rank()};
+                        std::sort(arr, arr + 3);
+                        if (arr[1] - arr[0] == 1 && arr[2] - arr[1] == 1)
+                        {
+                            std::set<int> pong = {i, j, k};
+                            chows.push_back(pong);
+                        }
+                    }
+                }
+            }
+
+            return chows;
+        }
+
+        /**
+         * @brief Find all index positions of pongs (three of a kind) currently in hand.
+         * @return Vector of sets of indices representing the positions of three identical tiles.
+         */
+        std::vector<std::set<int>> get_pongs()
+        {
+            std::vector<std::set<int>> pongs;
+
+            // Iterate through the vector
+            for (int i = 0; i < tiles.size(); ++i)
+            {
+                for (int j = i + 1; j < tiles.size(); ++j)
+                {
+                    for (int k = j + 1; k < tiles.size(); k++)
+                    {
+                        // Check if the tiles are identical
+                        if (tiles[i] == tiles[j] && tiles[j] == tiles[k])
+                        {
+                            std::set<int> pong = {i, j, k};
+                            pongs.push_back(pong);
+                        }
+                    }
+                }
+            }
+
+            return pongs;
+        }
+
+        /**
+         * @brief Find all index positions of kongs (four of a kind) currently in hand.
+         * @return Vector of sets of indices representing the positions of four identical tiles.
+         */
+        std::vector<std::set<int>> get_kongs()
+        {
+            std::vector<std::set<int>> kongs;
+
+            // Iterate through the vector
+            for (int i = 0; i < tiles.size(); ++i)
+            {
+                for (int j = i + 1; j < tiles.size(); ++j)
+                {
+                    for (int k = j + 1; k < tiles.size(); k++)
+                    {
+                        for (int l = k + 1; l < tiles.size(); l++)
+                        {
+                            // Check if the tiles are identical
+                            if (tiles[i] == tiles[j] && tiles[j] == tiles[k] && tiles[k] == tiles[l])
+                            {
+                                std::set<int> kong = {i, j, k, l};
+                                kongs.push_back(kong);
+                            }
+                        }
+                    }
+                }
+            }
+
+            return kongs;
+        }
+
+        /**
+         * @brief Get all possible combinations of sets of tiles, including pairs, chows, pongs, and kongs.
+         *
+         * This function retrieves sets of tiles representing pairs, chows, pongs, and kongs,
+         * and combines them into a vector of sets representing all possible combinations.
+         *
+         * @return A vector of sets of integers, where each set represents a combination of tiles.
+         *         The vector includes sets for pairs, chows, pongs, and kongs.
+         *         Each set contains integers representing the unique identifiers of tiles in the combination.
+         *         The order of sets in the vector is pairs, chows, pongs, and kongs.
+         */
+        std::vector<std::set<int>> get_combinations()
+        {
+
+            // Retrieve sets of pairs, chows, pongs, and kongs
+            std::vector<std::set<int>> pairs = get_pairs();
+            std::vector<std::set<int>> chows = get_chows();
+            std::vector<std::set<int>> pongs = get_pongs();
+            std::vector<std::set<int>> kongs = get_kongs();
+
+            // Combine sets into a vector of all possible combinations
+            std::vector<std::set<int>> combinations(pairs.begin(), pairs.end());
+            combinations.insert(combinations.end(), chows.begin(), chows.end());
+            combinations.insert(combinations.end(), pongs.begin(), pongs.end());
+            combinations.insert(combinations.end(), kongs.begin(), kongs.end());
+
+            return combinations;
         }
 
         /**

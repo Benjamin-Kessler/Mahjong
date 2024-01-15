@@ -11,6 +11,9 @@
 #define MAX_ROW 100
 #define MAX_COL 100
 
+// Define the default number of columns
+#define N_COLUMNS 14
+
 /**
  * @namespace DLX
  * @brief Namespace for dancing links classes and functions.
@@ -377,7 +380,7 @@ namespace DLX
             {
                 for (int value : subset)
                 {
-                    prob_matrix[current_row][value - 1] = true;
+                    prob_matrix[current_row][value] = true;
                 }
                 current_row++;
             }
