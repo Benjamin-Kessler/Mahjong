@@ -90,6 +90,16 @@ int main()
         }
         else if (input == "game")
         {
+            if (game.get_set_size() == 0)
+            {
+                srand(time(NULL));
+
+                Mahjong::Game game = Mahjong::Game(46);
+
+                int player_number = 0;
+                game.set_human(player_number);
+            }
+
             unsigned int current_player;
             bool broadcast;
 

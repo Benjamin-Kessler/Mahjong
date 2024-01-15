@@ -22,6 +22,11 @@
 /** @brief Initial number of tiles in hand. */
 const unsigned int HAND_SIZE = 13;
 
+/** @brief Special combinations of tiles in hand. */
+const std::vector<std::set<Mahjong::Tile>> SPECIAL_COMBINATIONS = {
+    {Mahjong::Tile(3, 0), Mahjong::Tile(3, 1), Mahjong::Tile(3, 2), Mahjong::Tile(3, 3)},
+    {Mahjong::Tile(4, 0), Mahjong::Tile(4, 1), Mahjong::Tile(4, 2)}};
+
 /**
  * @namespace Mahjong
  * @brief Namespace for Mahjong-related classes and functions.
@@ -268,28 +273,29 @@ namespace Mahjong
          */
         bool is_winning_hand()
         {
-            std::cout << "Checking winning hand...\n";
+            // std::cout << "Checking winning hand...\n";
+
             // Early abort of computations if not enough tiles in hand.
             if (tiles.size() != 14)
             {
-                std::cout << "Not enough tiles in hand.\n";
+                // std::cout << "Not enough tiles in hand.\n";
                 return false;
             }
 
             // Early abort of computations if no pair in hand.
             if (get_pairs().size() == 0)
             {
-                std::cout << "No pair in hand.\n";
+                // std::cout << "No pair in hand.\n";
                 return false;
             }
 
-            std::cout << "Computing combinations...\n";
+            // std::cout << "Computing combinations...\n";
             std::vector<std::set<int>> combinations = get_combinations();
 
             // Early abort of computations if not enough combinations on hand to win.
             if (combinations.size() < 5)
             {
-                std::cout << "Not enough combinations in hand.\n";
+                // std::cout << "Not enough combinations in hand.\n";
                 return false;
             }
 
@@ -301,7 +307,7 @@ namespace Mahjong
             }
             if (used_tiles.size() != HAND_SIZE + 1)
             {
-                std::cout << "Not all tiles included in at least one combination.\n";
+                // std::cout << "Not all tiles included in at least one combination.\n";
                 return false;
             }
 
@@ -323,7 +329,7 @@ namespace Mahjong
                     }
                 }
             }
-            std::cout << "Not the right covers in hand.\n";
+            // std::cout << "Not the right covers in hand.\n";
             return false;
         }
 

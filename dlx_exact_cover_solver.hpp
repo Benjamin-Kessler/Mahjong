@@ -359,7 +359,7 @@ namespace DLX
                 merged_set.insert(set.begin(), set.end());
             }
 
-            n_col = merged_set.size();
+            n_col = 14;
             n_row = sets.size() + 1;
 
             // Initialize the problem matrix with headers 1.
