@@ -152,17 +152,16 @@ namespace Mahjong
          * and adds it to the specified discard pile. The discarded tile is removed from the hand.
          *
          * @param discard_pile Reference to the game's discard pile.
-         *
-         * @note This function assumes that the hand has the required number of tiles (HAND_SIZE + 1)
-         * and that there is at least one hidden tile to discard. It uses the rand() function with a time-based seed.
          */
         void discard_random_tile(Discard_pile &discard_pile)
         {
-            assert(tiles.size() == HAND_SIZE + 1);
-            unsigned seed = time(0);
-            srand(seed);
+            srand(time(0));
             unsigned int to_discard;
             bool valid_discard = false;
+            if (get_hidden_hand().size() == 0)
+            {
+                return;
+            }
             while (valid_discard == false)
             {
                 to_discard = std::rand() % (HAND_SIZE + 1);
@@ -258,9 +257,6 @@ namespace Mahjong
          *
          * This function iterates through the tiles in the hand and collects the ones
          * that are marked as hidden. It returns a vector containing all hidden tiles.
-         *
-         * @note This function assumes the existence of a class 'Tile' and a class 'Hand'
-         *       with a static member 'tiles' representing the tiles in the hand.
          *
          * @return A vector of Tile objects representing the hidden tiles in the hand.
          */
