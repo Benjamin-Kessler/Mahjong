@@ -276,7 +276,7 @@ namespace DLX
             std::set<int> solutions_set;
             for (auto i = solutions.begin(); i != solutions.end(); i++)
             {
-                solutions_set.insert((*i)->row_id);
+                solutions_set.insert(((*i)->row_id) - 1);
             }
 
             solutions_vector.push_back(solutions_set);

@@ -23,9 +23,9 @@
 const unsigned int HAND_SIZE = 13;
 
 /** @brief Special combinations of tiles in hand. */
-const std::vector<std::set<Mahjong::Tile>> SPECIAL_COMBINATIONS = {
-    {Mahjong::Tile(3, 0), Mahjong::Tile(3, 1), Mahjong::Tile(3, 2), Mahjong::Tile(3, 3)},
-    {Mahjong::Tile(4, 0), Mahjong::Tile(4, 1), Mahjong::Tile(4, 2)}};
+// const std::vector<std::set<Mahjong::Tile>> SPECIAL_COMBINATIONS = {
+//     {Mahjong::Tile(3, 0), Mahjong::Tile(3, 1), Mahjong::Tile(3, 2), Mahjong::Tile(3, 3)},
+//     {Mahjong::Tile(4, 0), Mahjong::Tile(4, 1), Mahjong::Tile(4, 2)}};
 
 /**
  * @namespace Mahjong
@@ -251,13 +251,20 @@ namespace Mahjong
                       } });
         }
 
+        /**
+         * @brief Prints a vector of sets of integers (usually combinations or covers) to the terminal.
+         * @note Mostly for debugging purposes
+         */
         void print_combinations(std::vector<std::set<int>> combinations)
         {
+            unsigned int index = 0;
             for (auto set : combinations)
             {
+                std::cout << index << ": ";
                 for (int value : set)
                     std::cout << value << " ";
                 std::cout << "\n";
+                index++;
             }
         }
 

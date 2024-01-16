@@ -268,8 +268,9 @@ namespace Mahjong
          */
         void display_discard_pile() const
         {
-            std::cout << "Discard pile:" << std::endl;
+            std::cout << "Discard pile:\n";
             discard_pile.display_discard_pile();
+            std::cout << "\n";
         }
 
         /**

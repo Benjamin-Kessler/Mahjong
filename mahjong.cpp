@@ -5,6 +5,7 @@ Mahjong in C++
 #include <iostream>
 #include <ctime>
 #include <random>
+#include <thread>
 #include <vector>
 
 #include "Tile.hpp"
@@ -145,15 +146,16 @@ int main()
                     game.set_current_player(current_player);
                     broadcast = (current_player == player_number);
 
+                    if (current_player == player_number && game.get_pile_size() > 0)
+                    {
+                        game.display_discard_pile();
+                    }
+
                     cout << "Player " << current_player << "'s turn:" << endl;
                     game.player_turn(current_player, broadcast);
                 }
 
-                if (current_player == player_number && game.get_pile_size() > 0)
-                {
-                    game.display_discard_pile();
-                }
-
+                std::this_thread::sleep_for(1500ms);
                 std::cout << "\n";
 
                 if (game.get_set_size() == 0)
