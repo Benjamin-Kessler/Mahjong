@@ -12,12 +12,14 @@
 #include <random>
 #include <map>
 #include <string>
+#include <tuple>
 
 #include "Tile.hpp"
 #include "Set.hpp"
 #include "Game.hpp"
 #include "Discard_pile.hpp"
 #include "dlx_exact_cover_solver.hpp"
+#include "score_table.hpp"
 
 /** @brief Initial number of tiles in hand. */
 const unsigned int HAND_SIZE = 13;
@@ -681,6 +683,20 @@ namespace Mahjong
                 available_actions.push_back("chow");
             }
             return available_actions;
+        }
+
+        /**
+         * @brief Retrieves the score of the current hand from the Mahjong score table.
+         *
+         * This function initializes the Mahjong score table and computes all possible scores
+         * of the current hand. If there are multiple scores, the maximal one is returned.
+         *
+         * @return The maximal score of the current hand according to the scoring table.
+         */
+        int get_score()
+        {
+            Mahjong::initialize_score_table();
+            return std::get<0>(Mahjong::score_table[{0, 0, 0}]);
         }
     };
 } // namespace Mahjong

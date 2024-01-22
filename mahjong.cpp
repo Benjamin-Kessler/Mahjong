@@ -155,7 +155,7 @@ int main()
                     game.player_turn(current_player, broadcast);
                 }
 
-                std::this_thread::sleep_for(1500ms);
+                std::this_thread::sleep_for(500ms);
                 std::cout << "\n";
 
                 if (game.get_set_size() == 0)
