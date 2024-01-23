@@ -44,20 +44,11 @@ namespace Mahjong
     void initialize_score_table()
     {
         // Set scores for pairs
-        score_table[{0, 0, 0}] = {2, 0};
-        score_table[{0, 0, 1}] = {2, 0};
-
-        score_table[{0, 1, 0}] = {2, 0};
-        score_table[{0, 1, 1}] = {2, 0};
-
-        score_table[{0, 2, 0}] = {2, 0};
-        score_table[{0, 2, 1}] = {2, 0};
-
-        score_table[{0, 3, 0}] = {4, 0};
-        score_table[{0, 3, 1}] = {4, 0};
-
-        score_table[{0, 4, 0}] = {4, 0};
-        score_table[{0, 4, 1}] = {4, 0};
+        score_table[{0, 0, 0}] = {0, 0};
+        score_table[{0, 1, 0}] = {0, 0};
+        score_table[{0, 2, 0}] = {0, 0};
+        score_table[{0, 3, 0}] = {2, 0};
+        score_table[{0, 4, 0}] = {2, 0};
 
         // Set scores for chows
         score_table[{1, 0, 0}] = {0, 0};
@@ -91,21 +82,26 @@ namespace Mahjong
         score_table[{2, 4, 0}] = {8, 1};
         score_table[{2, 4, 1}] = {16, 1};
 
-        // Set scores for kongs
+        // Set scores for kongs (a visibility of 2 mans that it is partially open)
         score_table[{3, 0, 0}] = {8, 1};
         score_table[{3, 0, 1}] = {16, 1};
+        score_table[{3, 0, 2}] = {16, 1};
 
         score_table[{3, 1, 0}] = {8, 1};
         score_table[{3, 1, 1}] = {16, 1};
+        score_table[{3, 1, 2}] = {16, 1};
 
         score_table[{3, 2, 0}] = {8, 1};
         score_table[{3, 2, 1}] = {16, 1};
+        score_table[{3, 2, 2}] = {16, 1};
 
         score_table[{3, 3, 0}] = {16, 2};
         score_table[{3, 3, 1}] = {32, 2};
+        score_table[{3, 3, 2}] = {32, 2};
 
         score_table[{3, 4, 0}] = {16, 2};
         score_table[{3, 4, 1}] = {32, 2};
+        score_table[{3, 4, 2}] = {32, 2};
     }
 
 } // namespace Mahjong

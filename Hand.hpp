@@ -400,10 +400,14 @@ namespace Mahjong
         }
 
         /**
-         * @brief Find all index positions of pairs currently in hand.
-         * @return Vector of sets of indices representing the positions of two identical tiles.
+         * @brief Finds all pairs of identical and hidden tiles in the Mahjong hand.
+         *
+         * This function iterates through the Mahjong hand and identifies all pairs of tiles
+         * that have the same rank, suit, and are both hidden.
+         *
+         * @return A vector of sets, where each set represents the indices of tiles forming a pair.
          */
-        std::vector<std::set<int>> get_pairs()
+        std::vector<std::set<int>> get_pairs() const
         {
             std::vector<std::set<int>> pairs;
 
@@ -412,8 +416,8 @@ namespace Mahjong
             {
                 for (int j = i + 1; j < tiles.size(); ++j)
                 {
-                    // Check if the tiles are identical
-                    if (tiles[i] == tiles[j])
+                    // Check if the tiles are identical and are both hidden
+                    if ((tiles[i] == tiles[j]) && tiles[i].is_hidden() && tiles[j].is_hidden())
                     {
                         std::set<int> pair = {i, j};
                         pairs.push_back(pair);
@@ -425,11 +429,14 @@ namespace Mahjong
         }
 
         /**
-         * @brief Find all index positions of chows (three tiles of suit bamboo, character or circles of increasing ranks)
-         * currently in hand.
-         * @return Vector of sets of indices representing the positions of three tiles forming a chow.
+         * @brief Finds all chow combinations in the Mahjong hand.
+         *
+         * This function iterates through the Mahjong hand and identifies all chow combinations,
+         * where three tiles have consecutive ranks, belong to the same suit, and have the same visibility state.
+         *
+         * @return A vector of sets, where each set represents the indices of tiles forming a chow combination.
          */
-        std::vector<std::set<int>> get_chows()
+        std::vector<std::set<int>> get_chows() const
         {
             std::vector<std::set<int>> chows;
 
@@ -446,10 +453,10 @@ namespace Mahjong
                     {
                         if (tiles[j].get_suit() != tiles[k].get_suit())
                             continue;
-                        // Check if the tiles are identical
+                        // Check if the tiles are identical and have the same visibility
                         int arr[] = {tiles[i].get_rank(), tiles[j].get_rank(), tiles[k].get_rank()};
                         std::sort(arr, arr + 3);
-                        if (arr[1] - arr[0] == 1 && arr[2] - arr[1] == 1)
+                        if ((arr[1] - arr[0] == 1 && arr[2] - arr[1] == 1) && (tiles[i].is_hidden() == tiles[j].is_hidden()) && (tiles[j].is_hidden() == tiles[k].is_hidden()))
                         {
                             std::set<int> pong = {i, j, k};
                             chows.push_back(pong);
@@ -462,10 +469,14 @@ namespace Mahjong
         }
 
         /**
-         * @brief Find all index positions of pongs (three of a kind) currently in hand.
-         * @return Vector of sets of indices representing the positions of three identical tiles.
+         * @brief Finds all pong combinations in the Mahjong hand.
+         *
+         * This function iterates through the Mahjong hand and identifies all pong combinations,
+         * where three tiles are identical and have the same visibility state.
+         *
+         * @return A vector of sets, where each set represents the indices of tiles forming a pong combination.
          */
-        std::vector<std::set<int>> get_pongs()
+        std::vector<std::set<int>> get_pongs() const
         {
             std::vector<std::set<int>> pongs;
 
@@ -476,8 +487,8 @@ namespace Mahjong
                 {
                     for (int k = j + 1; k < tiles.size(); k++)
                     {
-                        // Check if the tiles are identical
-                        if (tiles[i] == tiles[j] && tiles[j] == tiles[k])
+                        // Check if the tiles are identical and have the same visibility
+                        if (tiles[i] == tiles[j] && tiles[j] == tiles[k] && (tiles[i].is_hidden() == tiles[j].is_hidden()) && (tiles[j].is_hidden() == tiles[k].is_hidden()))
                         {
                             std::set<int> pong = {i, j, k};
                             pongs.push_back(pong);
@@ -490,10 +501,14 @@ namespace Mahjong
         }
 
         /**
-         * @brief Find all index positions of kongs (four of a kind) currently in hand.
-         * @return Vector of sets of indices representing the positions of four identical tiles.
+         * @brief Finds all kong combinations in the Mahjong hand.
+         *
+         * This function iterates through the Mahjong hand and identifies all kong combinations,
+         * where four tiles are identical.
+         *
+         * @return A vector of sets, where each set represents the indices of tiles forming a kong combination.
          */
-        std::vector<std::set<int>> get_kongs()
+        std::vector<std::set<int>> get_kongs() const
         {
             std::vector<std::set<int>> kongs;
 
@@ -531,7 +546,7 @@ namespace Mahjong
          *         Each set contains integers representing the unique identifiers of tiles in the combination.
          *         The order of sets in the vector is pairs, chows, pongs, and kongs.
          */
-        std::vector<std::set<int>> get_combinations()
+        std::vector<std::set<int>> get_combinations() const
         {
 
             // Retrieve sets of pairs, chows, pongs, and kongs
@@ -686,17 +701,153 @@ namespace Mahjong
         }
 
         /**
-         * @brief Retrieves the score of the current hand from the Mahjong score table.
+         * @brief Determines the type of Mahjong combination based on the given set of tile indices.
          *
-         * This function initializes the Mahjong score table and computes all possible scores
-         * of the current hand. If there are multiple scores, the maximal one is returned.
+         * This function identifies the type of Mahjong combination (e.g., pair, chow, pong, kong) based on the
+         * number of tiles and their ranks in the provided combination.
          *
-         * @return The maximal score of the current hand according to the scoring table.
+         * @param combination A set of integers representing the indices of tiles in the combination.
+         * @return An unsigned integer representing the Mahjong combination type:
+         *         - 0: Pair
+         *         - 1: Chow
+         *         - 2: Pong
+         *         - 3: Kong
          */
-        int get_score()
+        unsigned int get_combination_type(std::set<int> combination) const
+        {
+            // If combination contains two tiles then it must be a pair.
+            if (combination.size() == 2)
+                return 0;
+
+            // If combination contains four tiles then it must be a kong.
+            else if (combination.size() == 4)
+                return 3;
+
+            // If the combination contains 3 tiles and two have matching rank, it must be a pong.
+            if (tiles[*std::next(combination.begin(), 0)].get_rank() == tiles[*std::next(combination.begin(), 1)].get_rank())
+                return 2;
+
+            // Return chow if no other valid combination.
+            return 1;
+        }
+
+        /**
+         * @brief Computes the maximum Mahjong score and its corresponding multiplier for the current hand.
+         *
+         * This function initializes the Mahjong score table, generates all possible combinations of tiles,
+         * and calculates the maximum score and the sum of multipliers for the current hand based on the scoring table.
+         *
+         * @return A tuple containing the maximum Mahjong score and the corresponding sum of multipliers.
+         */
+        std::tuple<int, int> get_max_score() const
+        {
+            unsigned int max_sum = 0;
+            unsigned int max_multiplier_sum = 0;
+
+            Mahjong::initialize_score_table();
+
+            std::vector<std::set<int>> combinations = get_combinations();
+            std::set<int> used_tiles;
+
+            std::tie(max_sum, max_multiplier_sum) = get_score_recursive(combinations, used_tiles, 0, 0);
+
+            return std::make_tuple(max_sum, max_multiplier_sum);
+        }
+
+        /**
+         * @brief Recursively explores all possible combinations of tiles to find the maximum Mahjong score.
+         *
+         * This function is part of the Mahjong scoring algorithm and is called recursively to explore different combinations
+         * of tiles while avoiding overlaps. It calculates the maximum score and the sum of multipliers for the current hand.
+         *
+         * @param combinations A vector of sets representing all possible combinations of tiles.
+         * @param used_tiles A set containing indices of tiles that have been used in the current exploration.
+         * @param current_index The index of the current combination being explored.
+         * @param current_multiplier_sum The current sum of multipliers for the explored combinations.
+         * @return A tuple containing the maximum Mahjong score and the corresponding sum of multipliers.
+         */
+        std::tuple<int, int> get_score_recursive(const std::vector<std::set<int>> &combinations, std::set<int> &used_tiles, int current_index, int current_multiplier_sum) const
+        {
+            int max_sum = 0;
+            int max_multiplier_sum = current_multiplier_sum;
+
+            for (int i = current_index; i < combinations.size(); i++)
+            {
+                const std::set<int> &current_combination = combinations[i];
+
+                bool overlap = false;
+                for (int tile : current_combination)
+                {
+                    if (used_tiles.count(tile) > 0)
+                    {
+                        overlap = true;
+                        break;
+                    }
+                }
+
+                if (!overlap)
+                {
+                    used_tiles.insert(current_combination.begin(), current_combination.end());
+                    auto [current_score, current_multi] = get_combination_score(current_combination);
+
+                    // Recursively explore other combinations
+                    auto [next_sum, next_multiplier_sum] = get_score_recursive(combinations, used_tiles, i + 1, current_multiplier_sum);
+
+                    // Update max_sum and max_multiplier_sum if needed
+                    if (next_sum + current_score > max_sum)
+                    {
+                        max_sum = next_sum + current_score;
+                        max_multiplier_sum = next_multiplier_sum + current_multi;
+                    }
+
+                    // Backtrack
+                    for (int tile : current_combination)
+                    {
+                        used_tiles.erase(tile);
+                    }
+                }
+            }
+
+            return std::make_tuple(max_sum, max_multiplier_sum);
+        }
+
+        /**
+         * @brief Computes the Mahjong score for a given combination of tiles.
+         *
+         * This function initializes the Mahjong score table and calculates the score for a specific combination
+         * of tiles based on the combination type, suit, and visibility of the tiles.
+         *
+         * @param combination A set of integers representing the indices of tiles in the combination.
+         * @return A tuple containing the Mahjong score and the corresponding multiplier for the given combination.
+         */
+        std::tuple<int, int> get_combination_score(std::set<int> combination) const
         {
             Mahjong::initialize_score_table();
-            return std::get<0>(Mahjong::score_table[{0, 0, 0}]);
+
+            unsigned int type = get_combination_type(combination);
+            unsigned int suit = tiles[*std::next(combination.begin(), 0)].get_suit();
+            unsigned int visibility = 0;
+
+            std::set<int> all_visibilities;
+            for (int index : combination)
+            {
+                all_visibilities.insert(static_cast<int>(tiles[index].is_hidden()));
+            }
+
+            if (all_visibilities.count(0) > 0)
+            {
+                visibility = 1; // At least one visible tile
+            }
+            else if (all_visibilities.count(1) > 0)
+            {
+                visibility = 0; // At least one hidden tile
+            }
+            else
+            {
+                visibility = 2; // Multiple visibility states
+            }
+
+            return Mahjong::score_table[{type, suit, visibility}];
         }
     };
 } // namespace Mahjong
