@@ -77,7 +77,7 @@ namespace Mahjong
          * @brief Displays the hand of a specified player.
          * @param player_number Index of the player.
          */
-        void display_player_hand(unsigned int player_number)
+        void display_player_hand(unsigned int player_number) const
         {
             Player &player = players[player_number];
             player.display_hand();
@@ -87,7 +87,7 @@ namespace Mahjong
          * @brief Displays the visible portion of a player's hand.
          * @param player_number Index of the player.
          */
-        void display_visible_player_hand(unsigned int player_number)
+        void display_visible_player_hand(unsigned int player_number) const
         {
             Player &player = players[player_number];
             player.display_visible_hand();
@@ -216,7 +216,7 @@ namespace Mahjong
          *
          * @param player_number The player number to check for a winning hand.
          */
-        void player_has_winning_hand(unsigned int player_number)
+        void player_has_winning_hand(unsigned int player_number) const
         {
             Player &player = players[player_number];
             if (player.has_winning_hand())
@@ -227,7 +227,7 @@ namespace Mahjong
             }
         }
 
-        void display_player_score(unsigned int player_number, bool full_hand)
+        void display_player_score(unsigned int player_number, bool full_hand) const
         {
             Mahjong::Player &player = players[player_number];
             player.display_player_score(full_hand);

@@ -205,7 +205,7 @@ namespace Mahjong
          *
          * @return The number of tiles in the hand.
          */
-        int get_hand_size()
+        int get_hand_size() const
         {
             return tiles.size();
         }
@@ -215,7 +215,7 @@ namespace Mahjong
          *
          * Each tile is displayed with its index in the hand.
          */
-        void display_hand()
+        void display_hand() const
         {
             for (size_t i = 0; i < tiles.size(); i++)
             {
@@ -228,7 +228,7 @@ namespace Mahjong
          *
          * Tiles marked as hidden are excluded from the display.
          */
-        void display_visible_hand()
+        void display_visible_hand() const
         {
             unsigned int hand_size = tiles.size();
             std::cout << "Known tiles: " << std::endl;

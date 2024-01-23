@@ -52,7 +52,7 @@ namespace Mahjong
         /**
          * @brief Display the player's complete hand.
          */
-        void display_hand()
+        void display_hand() const
         {
             hand.display_hand();
         }
@@ -60,7 +60,7 @@ namespace Mahjong
         /**
          * @brief Display only the visible (non-hidden) tiles in the player's hand.
          */
-        void display_visible_hand()
+        void display_visible_hand() const
         {
             hand.display_visible_hand();
         }
@@ -114,7 +114,7 @@ namespace Mahjong
          * @param current_player The player who discarded the last tile.
          * @return The chosen action as a string.
          */
-        std::string choose_pickup_action(Discard_pile &discard_pile, unsigned int current_player)
+        std::string choose_pickup_action(Discard_pile &discard_pile, unsigned int current_player) const
         {
             std::vector<std::string> available_actions = hand.check_available_actions(discard_pile, player_number, current_player);
             // std::cout << player_number << ", " << is_human << ", " << available_actions.size() << std::endl;
@@ -170,7 +170,7 @@ namespace Mahjong
          * is displayed indicating the winning status, and the game is set to a non-running state.
          *
          */
-        bool has_winning_hand()
+        bool has_winning_hand() const
         {
             return hand.is_winning_hand();
         }
