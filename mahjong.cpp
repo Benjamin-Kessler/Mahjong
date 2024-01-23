@@ -128,11 +128,13 @@ int main()
                         // std::cout << "Yes broadcast" << std::endl;
                         game.sort_player_hand(current_player);
                         game.display_player_hand(current_player);
+                        game.display_player_score(current_player, true);
                     }
                     else
                     {
                         // std::cout << "No broadcast" << std::endl;
                         game.display_visible_player_hand(current_player);
+                        game.display_player_score(current_player, false);
                     }
                     game.player_has_winning_hand(current_player);
                     if (game.is_running())

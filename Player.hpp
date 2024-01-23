@@ -6,6 +6,7 @@
 #pragma once
 
 #include <algorithm>
+#include <cmath>
 #include <random>
 
 #include "Hand.hpp"
@@ -172,6 +173,27 @@ namespace Mahjong
         bool has_winning_hand()
         {
             return hand.is_winning_hand();
+        }
+
+        std::tuple<int, int> get_player_score(bool full_hand = false) const
+        {
+            if (full_hand)
+                return hand.get_max_score();
+            else
+                return hand.get_visible_score();
+        }
+
+        void display_player_score(bool full_hand = false, bool mahjong = false) const
+        {
+            std::tuple<int, int> score = get_player_score(full_hand);
+            unsigned int unmodified_score = std::get<0>(score);
+            unsigned int multiplier = std::get<1>(score);
+
+            if (mahjong)
+                unmodified_score += 20;
+
+            std::cout << "Total score: " << unmodified_score * std::pow(2, multiplier);
+            std::cout << " (" << unmodified_score << " doubled " << multiplier << " times)\n";
         }
     };
 } // namespace Mahjong

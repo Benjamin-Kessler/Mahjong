@@ -221,9 +221,16 @@ namespace Mahjong
             Player &player = players[player_number];
             if (player.has_winning_hand())
             {
-                std::cout << "Player " << player_number << " has a winning hand. Congratulations." << std::endl;
+                std::cout << "Player " << player_number << " has a winning hand. Congratulations.\n";
+                player.display_player_score(true, true);
                 running = false;
             }
+        }
+
+        void display_player_score(unsigned int player_number, bool full_hand)
+        {
+            Mahjong::Player &player = players[player_number];
+            player.display_player_score(full_hand);
         }
 
         /**
@@ -239,6 +246,7 @@ namespace Mahjong
                 display_player_hand(player_number);
             else
                 display_visible_player_hand(player_number);
+            display_player_score(player_number, broadcast);
 
             player_has_winning_hand(player_number);
             if (running)

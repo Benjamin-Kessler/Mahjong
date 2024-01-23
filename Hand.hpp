@@ -103,6 +103,16 @@ namespace Mahjong
         }
 
         /**
+         * @brief Adds a given tile to the hand.
+         *
+         * @param tile Tile to be added.
+         */
+        void add_tile(Mahjong::Tile tile)
+        {
+            tiles.push_back(tile);
+        }
+
+        /**
          * @brief Picks a tile from the discard pile and adds it to the hand.
          *
          * @param discard_pile Reference to the game's discard pile.
@@ -257,7 +267,7 @@ namespace Mahjong
          * @brief Prints a vector of sets of integers (usually combinations or covers) to the terminal.
          * @note Mostly for debugging purposes
          */
-        void print_combinations(std::vector<std::set<int>> combinations)
+        void print_combinations(std::vector<std::set<int>> combinations) const
         {
             unsigned int index = 0;
             for (auto set : combinations)
@@ -280,7 +290,7 @@ namespace Mahjong
          *
          * @return True if the hand is a winning Mahjong hand, false otherwise.
          */
-        bool is_winning_hand()
+        bool is_winning_hand() const
         {
             // std::cout << "Checking winning hand...\n";
 
@@ -848,6 +858,26 @@ namespace Mahjong
             }
 
             return Mahjong::score_table[{type, suit, visibility}];
+        }
+
+        /**
+         * @brief Returns the Mahjong score associated to the visible tiles.
+         *
+         * Constructs a temporary instance of a hand containing only the visible tiles and computes the score accordingly.
+         *
+         * @return A tuple containing the Mahjong score and the corresponding multiplier for the given combination.
+         */
+        std::tuple<int, int> get_visible_score() const
+        {
+
+            Mahjong::Hand temp_hand = Hand();
+            for (Mahjong::Tile tile : tiles)
+            {
+                if (!tile.is_hidden())
+                    temp_hand.add_tile(tile);
+            }
+
+            return temp_hand.get_max_score();
         }
     };
 } // namespace Mahjong
