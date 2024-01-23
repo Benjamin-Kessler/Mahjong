@@ -690,7 +690,7 @@ namespace Mahjong
          * @note The available actions include "kong" if a kong is possible, "pong" if a pong is possible,
          * and "chow" if a chow is possible and the pickup is performed by the next player in turn.
          */
-        std::vector<std::string> check_available_actions(const Discard_pile &discard_pile, unsigned int player_number, int current_player) const
+        std::vector<std::string> check_available_actions(const Discard_pile &discard_pile, unsigned int player_number, int current_player)
         {
             std::vector<std::string> available_actions = {};
             Mahjong::Tile tile = discard_pile.back();

@@ -34,7 +34,7 @@ namespace Mahjong
     {
     private:
         unsigned int player_number; /**< The unique identifier for the player. */
-        bool is_human;              /**< Flag indicating if the player is a human player. */
+        bool is_human = false;      /**< Flag indicating if the player is a human player. */
         float money;                /**< The amount of money the player has. */
         Mahjong::Hand hand;         /**< The player's hand of tiles. */
 
@@ -114,7 +114,7 @@ namespace Mahjong
          * @param current_player The player who discarded the last tile.
          * @return The chosen action as a string.
          */
-        std::string choose_pickup_action(Discard_pile &discard_pile, unsigned int current_player) const
+        std::string choose_pickup_action(Discard_pile &discard_pile, unsigned int current_player)
         {
             std::vector<std::string> available_actions = hand.check_available_actions(discard_pile, player_number, current_player);
             // std::cout << player_number << ", " << is_human << ", " << available_actions.size() << std::endl;
@@ -150,6 +150,11 @@ namespace Mahjong
         void set_human()
         {
             is_human = true;
+        }
+
+        bool check_human()
+        {
+            return is_human;
         }
 
         /**

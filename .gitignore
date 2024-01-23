@@ -38,3 +38,5 @@
 
 # VS Code Settings
 .vscode
+
+.DS_Store
