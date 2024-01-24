@@ -733,71 +733,50 @@ namespace Mahjong
         }
 
         /**
-         * @brief Check whether a given tile, in combination with the current tiles in hand,
-         * would form a chow, i.e., three consecutive numbered tiles from the suits bamboos,
-         * circles, or characters.
+         * @brief Check if a given tile forms a chow in the concealed (hidden) hand.
          *
-         * This function checks if adding the specified tile to the current hidden hand could
-         * form a chow (three consecutive numbered tiles of the same suit). The tiles are
-         * sorted by suit and rank to facilitate finding sequences.
+         * This function checks whether a specified tile forms a chow in the concealed (hidden) hand.
+         * A chow is a set of three consecutive ranks in the same suit (except winds or dragons) in a
+         * player's concealed hand.
          *
-         * @param tile The Tile object representing the tile to check for chow formation.
-         * @return True if adding the specified tile would form a chow, false otherwise.
+         * @param tile The tile to be checked for chow formation.
          *
-         * @note Dragon and Wind tiles cannot be part of a chow.
+         * @return True if the provided tile forms a chow in the concealed hand, false otherwise.
          */
-        bool max_sum(const Mahjong::Tile tile) const
+        bool check_chow(const Mahjong::Tile tile)
         {
-            // Skip if suit equals Dragons or Winds as corresponding chows are not allowed.
-            if (tile.get_suit() == 3 || tile.get_suit() == 4)
-            {
+            unsigned int relevant_suit = tile.get_suit();
+
+            if (relevant_suit == 3 || relevant_suit == 4)
                 return false;
-            }
 
-            int suitCount = 0;
-            // Sort the tiles by rank to facilitate finding sequences
-            std::vector<Mahjong::Tile> sortedTiles = get_hidden_hand();
-            std::sort(sortedTiles.begin(), sortedTiles.end(), [](Mahjong::Tile &a, Mahjong::Tile &b)
-                      {
-                      if (a.get_suit() != b.get_suit())
-                      {
-                          return a.get_suit() < b.get_suit();
-                      }
-                      else
-                      {
-                          return a.get_rank() < b.get_rank();
-                      } });
+            unsigned int relevant_rank = tile.get_rank();
 
-            for (size_t i = 0; i < sortedTiles.size(); ++i)
+            std::vector<int> relevant_indices = {};
+
+            // Get all indexes of relevant tiles
+            for (int index = 0; index < tiles.size(); index++)
             {
-                if (sortedTiles[i].get_suit() == tile.get_suit())
-                {
-                    suitCount = 1;
+                Mahjong::Tile hand_tile = tiles[index];
+                if (!hand_tile.is_hidden())
+                    continue;
+                if (relevant_suit != hand_tile.get_suit())
+                    continue;
+                if (std::abs(tile.get_rank() - hand_tile.get_rank()) > 2)
+                    continue;
 
-                    for (size_t j = i + 1; j < sortedTiles.size(); ++j)
-                    {
-                        if (sortedTiles[j].get_suit() != tile.get_suit())
-                        {
-                            break;
-                        }
-
-                        if (sortedTiles[j].get_rank() == sortedTiles[i].get_rank() + 1)
-                        {
-                            ++suitCount;
-
-                            if (suitCount == 3)
-                            {
-                                return true;
-                            }
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
+                relevant_indices.push_back(index);
             }
 
+            std::set<int> all_ranks = {};
+            for (int index : relevant_indices)
+            {
+                all_ranks.insert(tiles[index].get_rank());
+            }
+
+            std::set<int> chow_starters = find_chow_starter_ranks(all_ranks);
+            if (chow_starters.size() > 1)
+                return true;
             return false;
         }
 
@@ -828,7 +807,7 @@ namespace Mahjong
             {
                 available_actions.push_back("pong");
             }
-            else if (max_sum(tile) && (player_number == ((current_player + 1) % 4)))
+            else if (check_chow(tile) && (player_number == ((current_player + 1) % 4)))
 
             {
                 available_actions.push_back("chow");
