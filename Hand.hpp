@@ -379,7 +379,7 @@ namespace Mahjong
          * @param tile An instance of class Tile representing the tile that was picked up.
          * @param action A string parameter to indicate which pick up action was performed (i.e. kong, pong or chow).
          */
-        void reveal_combination(Mahjong::Tile tile, std::string action)
+        void reveal_combination(Mahjong::Tile tile, std::string action, bool is_human)
         {
             if (action == "kong")
             {
@@ -407,6 +407,132 @@ namespace Mahjong
                     it++;
                 }
             }
+            else if (action == "chow")
+            {
+                std::vector<int> relevant_indices = {};
+                unsigned int relevant_suit = tile.get_suit();
+
+                // Get all indexes of relevant tiles
+                for (int index = 0; index < tiles.size(); index++)
+                {
+                    Mahjong::Tile hand_tile = tiles[index];
+                    if (!hand_tile.is_hidden())
+                        continue;
+                    if (relevant_suit != hand_tile.get_suit())
+                        continue;
+                    if (std::abs(tile.get_rank() - hand_tile.get_rank()) > 2)
+                        continue;
+
+                    relevant_indices.push_back(index);
+                }
+
+                // Skip further computations if only one option for chow is available
+                if (relevant_indices.size() == 3)
+                {
+                    for (int index : relevant_indices)
+                    {
+                        Mahjong::Tile &tile_to_reveal = tiles[index];
+                        tile_to_reveal.set_visible();
+                    }
+                    return;
+                }
+
+                std::set<int> all_ranks = {};
+                for (int index : relevant_indices)
+                {
+                    all_ranks.insert(tiles[index].get_rank());
+                }
+
+                // Skip further computations if only one option for chow is available
+                if (all_ranks.size() == 3)
+                {
+                    for (int rank : all_ranks)
+                    {
+                        Mahjong::Tile relevant_tile = Mahjong::Tile(relevant_suit, rank);
+                        auto it = std::find(tiles.begin(), tiles.end(), relevant_tile);
+                        auto pos = std::distance(tiles.begin(), it);
+                        Mahjong::Tile &tile_to_reveal = tiles[pos];
+                        tile_to_reveal.set_visible();
+                    }
+                    return;
+                }
+
+                std::set<int> chow_starters = find_chow_starter_ranks(all_ranks);
+
+                // Identify all possible chows
+                int chow_starter = 0;
+                if (chow_starters.size() == 1)
+                    chow_starter = *std::next(chow_starters.begin(), 0);
+                else
+                {
+                    // Get human choice if multiple chows are possible and player is human
+                    if (is_human)
+                    {
+                        std::cout << "Multiple chows possible. Select which tile to start the chow with:\n";
+                        for (int index = 0; index < chow_starters.size(); index++)
+                        {
+                            int relevant_rank = *std::next(chow_starters.begin(), index);
+                            Mahjong::Tile temp_tile = Mahjong::Tile(relevant_suit, relevant_rank);
+                            std::cout << index << ": " << temp_tile.get_tile_as_string() << "\n";
+                        }
+                        bool valid_input = false;
+                        unsigned int input;
+                        while (!valid_input)
+                        {
+
+                            std::cin >> input;
+                            if (input < chow_starters.size())
+                                valid_input = true;
+                            else
+                                std::cout << "Invalid input. Please select from the available options.\n";
+                        }
+
+                        chow_starter = *std::next(chow_starters.begin(), input);
+                    }
+                    // Select random chow choice if not human player
+                    else
+                    {
+                        srand(time(0));
+                        unsigned int input = std::rand() % (chow_starters.size());
+                        chow_starter = *std::next(chow_starters.begin(), input);
+                    }
+
+                    // Reveal chosen chow
+                    for (int rank_add = 0; rank_add < 3; rank_add++)
+                    {
+                        Mahjong::Tile relevant_tile = Mahjong::Tile(relevant_suit, chow_starter + rank_add);
+                        auto it = std::find(tiles.begin(), tiles.end(), relevant_tile);
+                        auto pos = std::distance(tiles.begin(), it);
+                        Mahjong::Tile &tile_to_reveal = tiles[pos];
+                        tile_to_reveal.set_visible();
+                    }
+                }
+            }
+        }
+
+        /**
+         * @brief Finds integers within a set that can serve as the starting point for a Mahjong chow combination.
+         *
+         * This function iterates through the provided set of integers and identifies those integers for which
+         * the next two consecutive integers are also present in the set. These integers can serve as the starting
+         * point for a Mahjong chow combination, where three consecutive ranks form a valid set.
+         *
+         * @param all_ranks A set of integers representing Mahjong tile ranks.
+         * @return A set of integers that can be used as the starting point for Mahjong chow combinations.
+         */
+        std::set<int> find_chow_starter_ranks(const std::set<int> &all_ranks)
+        {
+            std::set<int> result;
+
+            for (int num : all_ranks)
+            {
+                if (all_ranks.count(num + 1) && all_ranks.count(num + 2))
+                {
+                    result.insert(num);
+                }
+            }
+
+            return result;
         }
 
         /**
@@ -620,7 +746,7 @@ namespace Mahjong
          *
          * @note Dragon and Wind tiles cannot be part of a chow.
          */
-        bool check_chow(const Mahjong::Tile tile) const
+        bool max_sum(const Mahjong::Tile tile) const
         {
             // Skip if suit equals Dragons or Winds as corresponding chows are not allowed.
             if (tile.get_suit() == 3 || tile.get_suit() == 4)
@@ -702,7 +828,7 @@ namespace Mahjong
             {
                 available_actions.push_back("pong");
             }
-            else if (check_chow(tile) && (player_number == ((current_player + 1) % 4)))
+            else if (max_sum(tile) && (player_number == ((current_player + 1) % 4)))
 
             {
                 available_actions.push_back("chow");

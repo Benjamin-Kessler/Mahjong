@@ -137,6 +137,7 @@ namespace Mahjong
             }
             else if (available_actions.size() > 0)
             {
+                available_actions.push_back("none");
                 unsigned seed = std::time(0);
                 std::srand(seed);
                 return available_actions[std::rand() % available_actions.size()];
@@ -164,7 +165,7 @@ namespace Mahjong
          */
         void reveal_combination(Mahjong::Tile tile, std::string action)
         {
-            hand.reveal_combination(tile, action);
+            hand.reveal_combination(tile, action, is_human);
         }
 
         /**
