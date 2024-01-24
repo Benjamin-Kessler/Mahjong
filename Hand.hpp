@@ -951,11 +951,11 @@ namespace Mahjong
 
             if (all_visibilities.count(0) > 0)
             {
-                visibility = 1; // At least one visible tile
+                visibility = 0; // At least one visible tile
             }
             else if (all_visibilities.count(1) > 0)
             {
-                visibility = 0; // At least one hidden tile
+                visibility = 1; // At least one hidden tile
             }
             else
             {
