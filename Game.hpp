@@ -334,5 +334,21 @@ namespace Mahjong
         {
             current_player = new_current_player;
         }
+
+        int get_game_state_for_player(unsigned int player_number)
+        {
+            std::tuple<int, Mahjong::Hand, Mahjong::Hand, Mahjong::Hand, Mahjong::Hand, Mahjong::Discard_pile> game_state = std::make_tuple(player_number, Mahjong::Hand(), Mahjong::Hand(), Mahjong::Hand(), Mahjong::Hand(), discard_pile);
+            std::get<0>(game_state) = player_number;
+            // for (int i = 0; i < N_PLAYERS; i++)
+            // {
+            //     Mahjong::Player &player = players[i];
+            //     int pos = i + 1;
+            //     if (i == player_number)
+            //         std::get<pos>(game_state) = player.get_full_hand();
+            //     else
+            //         std::get<pos>(game_state) = player.get_visible_hand();
+            // }
+            return 0;
+        }
     };
 } // namespace Mahjong

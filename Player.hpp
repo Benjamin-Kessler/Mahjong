@@ -201,5 +201,21 @@ namespace Mahjong
             std::cout << "Total score: " << unmodified_score * std::pow(2, multiplier);
             std::cout << " (" << unmodified_score << " doubled " << multiplier << " times)\n";
         }
+
+        Mahjong::Hand get_visible_hand()
+        {
+            Mahjong::Hand visible_hand = Hand();
+            for (Mahjong::Tile tile : hand.get_tiles())
+            {
+                if (!tile.is_hidden())
+                    visible_hand.add_tile(tile);
+            }
+            return visible_hand;
+        }
+
+        Mahjong::Hand get_full_hand()
+        {
+            return hand;
+        }
     };
 } // namespace Mahjong

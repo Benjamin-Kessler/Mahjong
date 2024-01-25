@@ -984,5 +984,10 @@ namespace Mahjong
 
             return temp_hand.get_max_score();
         }
+
+        std::vector<Mahjong::Tile> get_tiles()
+        {
+            return tiles;
+        }
     };
 } // namespace Mahjong
