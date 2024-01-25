@@ -169,7 +169,14 @@ int main()
 
                 if (game.get_set_size() == 0)
                 {
-                    std::cout << "Game finished due to running out of tiles." << std::endl;
+                    std::cout << "Game finished due to running out of tiles.\n";
+                    for (int i = 0; i < N_PLAYERS; i++)
+                    {
+                        Mahjong::Player &player = game.get_players()[i];
+                        auto player_score = player.get_player_score();
+                        int full_score = get<0>(player_score) * pow(2, get<1>(player_score));
+                        cout << "Player " << i << "'s score: " << full_score << "\n";
+                    }
                     game.finish();
                 }
             }
