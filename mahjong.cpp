@@ -40,9 +40,7 @@ int main()
             {
                 srand(time(NULL));
 
-                Mahjong::Game game = Mahjong::Game(46);
-
-                int player_number = 0;
+                game.reset();
                 game.set_human(player_number);
             }
 
@@ -119,10 +117,7 @@ int main()
             if (game.get_set_size() == 0)
             {
                 srand(time(NULL));
-
-                Mahjong::Game game = Mahjong::Game(46);
-
-                int player_number = -1;
+                game.reset();
             }
 
             unsigned int current_player;
@@ -133,6 +128,7 @@ int main()
             cout << "Player " << current_player << "'s turn:" << endl;
             game.player_turn(current_player, broadcast);
             std::cout << "\n";
+            cout << game.is_running() << "\n";
 
             while (game.is_running())
             {
@@ -172,12 +168,11 @@ int main()
                     std::cout << "Game finished due to running out of tiles.\n";
                     for (int i = 0; i < N_PLAYERS; i++)
                     {
-                        Mahjong::Player &player = game.get_players()[i];
-                        auto player_score = player.get_player_score();
-                        int full_score = get<0>(player_score) * pow(2, get<1>(player_score));
-                        cout << "Player " << i << "'s score: " << full_score << "\n";
+                        cout << "Player " << i << " - ";
+                        game.display_player_score(i, true);
                     }
                     game.finish();
+                    cout << "\n";
                 }
             }
         }

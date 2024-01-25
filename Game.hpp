@@ -11,6 +11,7 @@
 #include <tuple>
 
 #include "Set.hpp"
+#include "State.hpp"
 #include "Player.hpp"
 #include "Discard_pile.hpp"
 
@@ -44,24 +45,45 @@ namespace Mahjong
          */
         Game(int id_in) : id(id_in), running(true), current_player(0)
         {
-            std::cout << "Initiated Game with ID " << id << std::endl;
+            std::cout << "Initiated Game with ID " << id << "\n";
 
             discard_pile = Discard_pile();
 
             set = Mahjong::Set();
             set.shuffle();
-            std::cout
-                << "Number of tiles in set: " << set.get_size() << std::endl;
 
             players = {};
             for (size_t player_number = 0; player_number < N_PLAYERS; player_number++)
             {
                 players.push_back(Player(player_number, set));
-                std::cout << "Initiated Player " << player_number << std::endl;
+                std::cout << "Initiated Player " << player_number << "\n";
             }
 
             std::cout
-                << "Number of tiles in set: " << set.get_size() << std::endl;
+                << "Number of tiles in set: " << set.get_size() << "\n";
+        }
+
+        void reset()
+        {
+            std::cout << "Reset Game with ID " << id << "\n";
+
+            running = true;
+            current_player = 0;
+
+            discard_pile = Discard_pile();
+
+            set = Mahjong::Set();
+            set.shuffle();
+
+            players = {};
+            for (size_t player_number = 0; player_number < N_PLAYERS; player_number++)
+            {
+                players.push_back(Player(player_number, set));
+                std::cout << "Initiated Player " << player_number << "\n";
+            }
+
+            std::cout
+                << "Number of tiles in set: " << set.get_size() << "\n";
         }
 
         /**
@@ -295,7 +317,7 @@ namespace Mahjong
          * @brief Gets the list of players in the game.
          * @return Vector of Player objects.
          */
-        std::vector<Player> get_players() const
+        std::vector<Player> get_players()
         {
             return players;
         }
@@ -335,13 +357,10 @@ namespace Mahjong
             current_player = new_current_player;
         }
 
-        int get_game_state_for_player(unsigned int player_number)
+        Mahjong::State get_game_state_for_player(unsigned int player_number)
         {
             std::vector<Mahjong::Hand> hands = {};
-            std::tuple<int, std::vector<Mahjong::Hand>, Mahjong::Discard_pile> game_state;
 
-            std::get<0>(game_state) = player_number;
-            std::get<2>(game_state) = discard_pile;
             for (int i = 0; i < N_PLAYERS; i++)
             {
                 Mahjong::Player &player = players[i];
@@ -351,8 +370,9 @@ namespace Mahjong
                 else
                     hands.push_back(player.get_visible_hand());
             }
-            std::get<1>(game_state) = hands;
-            return 0;
+
+            Mahjong::State game_state = Mahjong::State(player_number, hands, discard_pile);
+            return game_state;
         }
     };
 } // namespace Mahjong
