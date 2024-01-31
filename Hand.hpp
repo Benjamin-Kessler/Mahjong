@@ -949,13 +949,13 @@ namespace Mahjong
                 all_visibilities.insert(static_cast<int>(tiles[index].is_hidden()));
             }
 
-            if (all_visibilities.count(0) > 0)
+            if (all_visibilities.count(0) == 0)
             {
-                visibility = 0; // At least one visible tile
+                visibility = 1; // No visible tiles, i.e. all hidden.
             }
-            else if (all_visibilities.count(1) > 0)
+            else if (all_visibilities.count(1) == 0)
             {
-                visibility = 1; // At least one hidden tile
+                visibility = 1; // No hidden tiles, i.e. all visible.
             }
             else
             {
