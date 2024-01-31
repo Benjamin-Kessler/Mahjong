@@ -8,10 +8,10 @@ Mahjong in C++
 #include <thread>
 #include <vector>
 
-#include "Tile.hpp"
-#include "Set.hpp"
-#include "Game.hpp"
-#include "Player.hpp"
+#include "include/Tile.hpp"
+#include "include/Set.hpp"
+#include "include/Game.hpp"
+#include "include/Player.hpp"
 
 using namespace std;
 
@@ -106,7 +106,13 @@ int main()
                 if (game.get_set_size() == 0)
                 {
                     std::cout << "Game finished due to running out of tiles." << std::endl;
+                    for (int i = 0; i < N_PLAYERS; i++)
+                    {
+                        cout << "Player " << i << " - ";
+                        game.display_player_score(i, true);
+                    }
                     game.finish();
+                    cout << "\n";
                 }
             }
         }
