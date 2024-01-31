@@ -10,6 +10,7 @@
 #include <random>
 
 #include "Hand.hpp"
+#include "Policy.hpp"
 #include "Set.hpp"
 #include "Discard_pile.hpp"
 
@@ -35,6 +36,7 @@ namespace Mahjong
     private:
         unsigned int player_number; /**< The unique identifier for the player. */
         bool is_human = false;      /**< Flag indicating if the player is a human player. */
+        Mahjong::Policy policy;     /**< The AI policy dictating which actions to choose. */
         float money;                /**< The amount of money the player has. */
         Mahjong::Hand hand;         /**< The player's hand of tiles. */
 
@@ -104,7 +106,10 @@ namespace Mahjong
             }
             else
             {
-                hand.discard_random_tile(discard_pile);
+                // hand.discard_random_tile(discard_pile);
+                std::vector<int> valid_discards = hand.get_valid_discards();
+                int action = policy.select_action("Discard", valid_discards);
+                hand.discard_tile_by_index(discard_pile, action);
             }
         }
 
@@ -138,9 +143,7 @@ namespace Mahjong
             else if (available_actions.size() > 0)
             {
                 available_actions.push_back("none");
-                unsigned seed = std::time(0);
-                std::srand(seed);
-                return available_actions[std::rand() % available_actions.size()];
+                return policy.select_action("Pickup", available_actions);
             }
             return "none";
         }

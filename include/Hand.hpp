@@ -201,6 +201,42 @@ namespace Mahjong
         }
 
         /**
+         * @brief Discards a tile from the player's hand by its index.
+         *
+         * This function removes the tile at the specified index from the player's hand,
+         * adds it to the discard pile, and prints a message indicating the discarded tile.
+         *
+         * @param discard_pile A reference to the discard pile object.
+         * @param index The index of the tile to be discarded from the player's hand.
+         */
+        void discard_tile_by_index(Discard_pile &discard_pile, int index)
+        {
+            std::cout << "Discard " << tiles[index].get_tile_as_string() << std::endl;
+            discard_pile.add_discarded_tile(tiles[index]);
+            tiles.erase(tiles.begin() + index);
+        }
+
+        /**
+         * @brief Returns indices of valid tiles that can be discarded.
+         *
+         * This function scans the player's hand for hidden tiles and returns a vector
+         * containing the indices of those tiles. These indices represent the valid tiles
+         * that can be discarded during gameplay.
+         *
+         * @return A vector of integers representing the indices of valid tiles for discarding.
+         */
+        std::vector<int> get_valid_discards()
+        {
+            std::vector<int> valid_discards = {};
+            for (int index = 0; index < tiles.size(); index++)
+            {
+                if (tiles[index].is_hidden())
+                    valid_discards.push_back(index);
+            }
+            return valid_discards;
+        }
+
+        /**
          * @brief Gets the current size of the hand.
          *
          * @return The number of tiles in the hand.
