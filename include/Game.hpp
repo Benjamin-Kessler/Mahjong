@@ -357,6 +357,12 @@ namespace Mahjong
             current_player = new_current_player;
         }
 
+        void set_player_policy(unsigned int player_number, std::string new_policy)
+        {
+            Player &player = players[player_number];
+            player.set_policy(new_policy);
+        }
+
         Mahjong::State get_game_state_for_player(unsigned int player_number)
         {
             std::vector<Mahjong::Hand> hands = {};

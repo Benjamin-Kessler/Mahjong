@@ -38,8 +38,6 @@ int main()
 
             if (game.get_set_size() == 0)
             {
-                srand(time(NULL));
-
                 game.reset();
                 game.set_human(player_number);
             }
@@ -120,10 +118,12 @@ int main()
         {
             int player_number = -1;
 
+            game.set_player_policy(0, "tile_count");
+
             if (game.get_set_size() == 0)
             {
-                srand(time(NULL));
                 game.reset();
+                game.set_player_policy(0, "tile_count");
             }
 
             unsigned int current_player;

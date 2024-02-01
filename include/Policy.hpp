@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <random>
 #include <set>
 #include <string>
@@ -19,7 +20,8 @@ namespace Mahjong
     {
     private:
         std::string policy = "random";
-        float random = 0.1;
+        float random = 0.05;
+        float chow_rate = 0.5;
 
     public:
         Policy(){};
@@ -33,6 +35,13 @@ namespace Mahjong
         {
             if (VALID_POLICIES.find(new_policy) != VALID_POLICIES.end())
                 policy = new_policy;
+            else
+                std::cout << "Invalid policy " << new_policy << "\n";
+        }
+
+        std::string get_policy() const
+        {
+            return policy;
         }
 
         void set_randomness(float new_random)
@@ -40,14 +49,13 @@ namespace Mahjong
             random = new_random;
         }
 
-        template <typename Type>
-        Type select_action(std::string action_type, std::vector<Type> available_actions, Mahjong::State game_state)
+        int select_action(std::string action_type, std::vector<int> available_actions, Mahjong::State game_state)
         {
             std::string decision_policy = policy;
-            srand(time(0));
 
             // Select a random action with predefined chance given by randomness
             int random_number = std::rand() % 100;
+
             if (random * 100 < random_number)
                 decision_policy = "random";
 
@@ -62,17 +70,38 @@ namespace Mahjong
                 {
                     unsigned int player_number = game_state.get_player_number();
                     Mahjong::Hand player_hand = game_state.get_player_hand(player_number);
-                    // for (typename std::vector<Type>::size_type index = 0; index < available_actions.size(); ++index)
-                    // {
-                    //     if (std::is_integral<Type>::value)
-                    //     {
-                    //         Mahjong::Tile tile = player_hand.get_tile_by_index(static_cast<unsigned int>(index));
-                    //         int count_hand = player_hand.get_n_tile_occurence(tile);
-                    //         int count_seen = game_state.get_n_tile_occurence(tile);
-                    //     }
-                    //     return available_actions[std::rand() % available_actions.size()];
-                    // }
-                    return available_actions[0];
+
+                    int prefered_action;
+                    int minimal_score = 5000;
+
+                    for (int index : available_actions)
+                    {
+                        Mahjong::Tile tile = player_hand.get_tile_by_index(static_cast<unsigned int>(index));
+                        int count_hand = player_hand.get_n_tile_occurence(tile);
+                        int count_seen = game_state.get_n_tile_occurence(tile);
+                        int suit = (tile.get_suit() < 3) ? 0 : 1;
+                        int suit_count = player_hand.get_n_tiles_of_suit(tile.get_suit());
+
+                        int score = 1000 * count_hand + 100 * (4 - count_seen) + 10 * suit + suit_count;
+
+                        if (score < minimal_score)
+                        {
+                            prefered_action = index;
+                            minimal_score = score;
+                        }
+
+                        if (score == minimal_score)
+                            prefered_action = (std::rand() % 10 < 5) ? prefered_action : index;
+                    }
+                    // std::cout << "Minimal score " << minimal_score << " for " << player_hand.get_tile_by_index(prefered_action).get_tile_as_string() << "\n";
+                    return prefered_action;
+                }
+                else if (action_type == "Pickup")
+                {
+                    int prefered_action = *std::max_element(available_actions.begin(), available_actions.end());
+                    if (prefered_action == 1)
+                        return ((std::rand() % 10) < (chow_rate * 10)) ? 0 : 1;
+                    return prefered_action;
                 }
             }
 

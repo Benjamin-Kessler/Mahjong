@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <map>
 #include <random>
 
 #include "Hand.hpp"
@@ -16,6 +17,9 @@
 
 /** @brief Initial money for each player. */
 float STARTING_MONEY = 100;
+
+std::map<std::string, int> PICKUP_ACTION_TO_INT = {{"none", 0}, {"chow", 1}, {"pong", 2}, {"kong", 3}};
+std::map<int, std::string> PICKUP_ACTION_TO_STRING = {{0, "none"}, {1, "chow"}, {2, "pong"}, {3, "kong"}};
 
 /**
  * @namespace Mahjong
@@ -109,6 +113,7 @@ namespace Mahjong
                 // hand.discard_random_tile(discard_pile);
                 std::vector<int> valid_discards = hand.get_valid_discards();
                 int action = policy.select_action("Discard", valid_discards, game_state);
+                // std::cout << policy.get_policy() << "\n";
                 hand.discard_tile_by_index(discard_pile, action);
             }
         }
@@ -143,7 +148,10 @@ namespace Mahjong
             else if (available_actions.size() > 0)
             {
                 available_actions.push_back("none");
-                return policy.select_action("Pickup", available_actions, game_state);
+                std::vector<int> available_actions_int = {};
+                for (std::string action : available_actions)
+                    available_actions_int.push_back(PICKUP_ACTION_TO_INT[action]);
+                return PICKUP_ACTION_TO_STRING[policy.select_action("Pickup", available_actions_int, game_state)];
             }
             return "none";
         }

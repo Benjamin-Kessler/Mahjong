@@ -77,8 +77,7 @@ namespace Mahjong
          */
         void shuffle()
         {
-            unsigned seed = time(0);
-            std::shuffle(tiles.begin(), tiles.end(), std::default_random_engine(seed));
+            std::shuffle(tiles.begin(), tiles.end(), std::default_random_engine(time(NULL)));
         }
 
         /**

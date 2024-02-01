@@ -183,7 +183,6 @@ namespace Mahjong
          */
         void discard_random_tile(Discard_pile &discard_pile)
         {
-            srand(time(0));
             unsigned int to_discard;
             bool valid_discard = false;
             if (get_hidden_hand().size() == 0)
@@ -528,7 +527,6 @@ namespace Mahjong
                     // Select random chow choice if not human player
                     else
                     {
-                        srand(time(0));
                         unsigned int input = std::rand() % (chow_starters.size());
                         chow_starter = *std::next(chow_starters.begin(), input);
                     }
@@ -1031,9 +1029,20 @@ namespace Mahjong
             return tiles[index];
         }
 
-        unsigned int get_n_tile_occurence(Mahjong::Tile tile)
+        unsigned int get_n_tile_occurence(Mahjong::Tile tile) const
         {
             return std::count(tiles.begin(), tiles.end(), tile);
+        }
+
+        unsigned int get_n_tiles_of_suit(int suit) const
+        {
+            unsigned int n = 0;
+            for (Mahjong::Tile tile : tiles)
+            {
+                if (tile.get_suit() == suit)
+                    n += 1;
+            }
+            return n;
         }
     };
 } // namespace Mahjong
