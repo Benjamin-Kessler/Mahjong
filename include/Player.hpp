@@ -98,7 +98,7 @@ namespace Mahjong
          * @brief Discard a tile from the player's hand.
          * @param discard_pile Reference to the discard pile.
          */
-        void discard_tile(Discard_pile &discard_pile)
+        void discard_tile(Discard_pile &discard_pile, State game_state)
         {
             if (is_human)
             {
@@ -108,7 +108,7 @@ namespace Mahjong
             {
                 // hand.discard_random_tile(discard_pile);
                 std::vector<int> valid_discards = hand.get_valid_discards();
-                int action = policy.select_action("Discard", valid_discards);
+                int action = policy.select_action("Discard", valid_discards, game_state);
                 hand.discard_tile_by_index(discard_pile, action);
             }
         }
@@ -119,7 +119,7 @@ namespace Mahjong
          * @param current_player The player who discarded the last tile.
          * @return The chosen action as a string.
          */
-        std::string choose_pickup_action(Discard_pile &discard_pile, unsigned int current_player)
+        std::string choose_pickup_action(Discard_pile &discard_pile, unsigned int current_player, Mahjong::State game_state)
         {
             std::vector<std::string> available_actions = hand.check_available_actions(discard_pile, player_number, current_player);
             // std::cout << player_number << ", " << is_human << ", " << available_actions.size() << std::endl;
@@ -143,7 +143,7 @@ namespace Mahjong
             else if (available_actions.size() > 0)
             {
                 available_actions.push_back("none");
-                return policy.select_action("Pickup", available_actions);
+                return policy.select_action("Pickup", available_actions, game_state);
             }
             return "none";
         }
@@ -159,6 +159,11 @@ namespace Mahjong
         bool check_human()
         {
             return is_human;
+        }
+
+        void set_policy(std::string new_policy)
+        {
+            policy.set_policy(new_policy);
         }
 
         /**

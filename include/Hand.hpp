@@ -1021,9 +1021,19 @@ namespace Mahjong
             return temp_hand.get_max_score();
         }
 
-        std::vector<Mahjong::Tile> get_tiles()
+        std::vector<Mahjong::Tile> get_tiles() const
         {
             return tiles;
+        }
+
+        Mahjong::Tile get_tile_by_index(unsigned int index) const
+        {
+            return tiles[index];
+        }
+
+        unsigned int get_n_tile_occurence(Mahjong::Tile tile)
+        {
+            return std::count(tiles.begin(), tiles.end(), tile);
         }
     };
 } // namespace Mahjong

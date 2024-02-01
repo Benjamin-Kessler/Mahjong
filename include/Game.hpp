@@ -156,7 +156,7 @@ namespace Mahjong
         void player_discard(unsigned int player_number)
         {
             Player &player = players[player_number];
-            player.discard_tile(discard_pile);
+            player.discard_tile(discard_pile, get_game_state_for_player(player_number));
         }
 
         /**
@@ -168,7 +168,7 @@ namespace Mahjong
         std::string player_choose_pickup_action(unsigned int player_number, unsigned int current_player)
         {
             Player &player = players[player_number];
-            return player.choose_pickup_action(discard_pile, current_player);
+            return player.choose_pickup_action(discard_pile, current_player, get_game_state_for_player(player_number));
         }
 
         /**

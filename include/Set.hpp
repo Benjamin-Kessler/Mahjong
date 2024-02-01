@@ -37,28 +37,26 @@ namespace Mahjong
         Set()
         {
             tiles = {};
-            for (size_t n = 0; n < 4; n++)
+            for (size_t i = 0; i < 5; i++)
             {
-                for (size_t i = 0; i < 5; i++)
+                int max_rank;
+                if (i == 3)
                 {
-                    int max_rank;
-                    if (i == 3)
-                    {
-                        max_rank = 4;
-                    }
-                    else if (i == 4)
-                    {
-                        max_rank = 3;
-                    }
-                    else
-                    {
-                        max_rank = 9;
-                    }
+                    max_rank = 4;
+                }
+                else if (i == 4)
+                {
+                    max_rank = 3;
+                }
+                else
+                {
+                    max_rank = 9;
+                }
 
-                    for (size_t j = 0; j < max_rank; j++)
-                    {
+                for (size_t j = 0; j < max_rank; j++)
+                {
+                    for (size_t n = 0; n < 4; n++)
                         tiles.push_back(Tile(i, j));
-                    }
                 }
             }
         }

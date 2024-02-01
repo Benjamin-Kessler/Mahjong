@@ -91,5 +91,10 @@ namespace Mahjong
         {
             return tiles.size();
         }
+
+        unsigned int get_n_tile_occurence(Mahjong::Tile tile) const
+        {
+            return std::count(tiles.begin(), tiles.end(), tile);
+        }
     };
 } // namespace Mahjong
