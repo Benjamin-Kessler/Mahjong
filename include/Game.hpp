@@ -255,6 +255,16 @@ namespace Mahjong
             player.display_player_score(full_hand);
         }
 
+        int get_player_score(unsigned int player_number, bool full_hand, bool mahjong)
+        {
+            Mahjong::Player &player = players[player_number];
+            std::tuple<int, int> scores = player.get_player_score(full_hand);
+            int score = std::get<0>(scores);
+            if (mahjong)
+                score += 20;
+            return (score * std::pow(2, std::get<1>(scores)));
+        }
+
         /**
          * @brief Simulates a player's turn, including drawing, sorting, and discarding.
          * @param player_number Index of the player.
