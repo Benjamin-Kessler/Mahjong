@@ -1019,21 +1019,44 @@ namespace Mahjong
             return temp_hand.get_max_score();
         }
 
+        /**
+         * @brief Returns a vector of tiles representing all the tiles in the player's hand.
+         *
+         * @return A vector of Mahjong::Tile objects representing the tiles in the hand.
+         */
         std::vector<Mahjong::Tile> get_tiles() const
         {
             return tiles;
         }
 
+        /**
+         * @brief Returns the tile at the specified index in the player's hand.
+         *
+         * @param index The index of the tile to retrieve.
+         * @return The Mahjong::Tile object at the specified index.
+         */
         Mahjong::Tile get_tile_by_index(unsigned int index) const
         {
             return tiles[index];
         }
 
+        /**
+         * @brief Returns the number of occurrences of a specific tile in the player's hand.
+         *
+         * @param tile The tile whose occurrences are to be counted.
+         * @return The number of occurrences of the specified tile.
+         */
         unsigned int get_n_tile_occurence(Mahjong::Tile tile) const
         {
             return std::count(tiles.begin(), tiles.end(), tile);
         }
 
+        /**
+         * @brief Returns the number of tiles of a specific suit in the player's hand.
+         *
+         * @param suit The suit for which the number of tiles is to be counted.
+         * @return The number of tiles of the specified suit.
+         */
         unsigned int get_n_tiles_of_suit(int suit) const
         {
             unsigned int n = 0;

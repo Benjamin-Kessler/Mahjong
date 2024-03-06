@@ -16,21 +16,35 @@ std::set<std::string> VALID_POLICIES = {"random", "human", "tile_count"};
  */
 namespace Mahjong
 {
+    /**
+     * @brief Class representing a policy for decision-making in Mahjong game.
+     */
     class Policy
     {
     private:
-        std::string policy = "random";
-        float random = 0.05;
-        float chow_rate = 0.5;
+        std::string policy = "random"; ///< The current policy for decision-making.
+        float random = 0.05;           ///< The randomness factor for decision-making.
+        float chow_rate = 0.5;         ///< The rate for selecting Chow action.
 
     public:
+        /**
+         * @brief Default constructor for Policy class.
+         */
         Policy(){};
 
+        /**
+         * @brief Sets the policy to "human".
+         */
         void set_human()
         {
             policy = "human";
         }
 
+        /**
+         * @brief Sets the policy to the specified one if it's valid.
+         *
+         * @param new_policy The new policy to be set.
+         */
         void set_policy(std::string new_policy)
         {
             if (VALID_POLICIES.find(new_policy) != VALID_POLICIES.end())
@@ -39,16 +53,36 @@ namespace Mahjong
                 std::cout << "Invalid policy " << new_policy << "\n";
         }
 
+        /**
+         * @brief Returns the current policy.
+         *
+         * @return The current policy as a string.
+         */
         std::string get_policy() const
         {
             return policy;
         }
 
+        /**
+         * @brief Sets the randomness factor for decision-making.
+         *
+         * @param new_random The new value for randomness factor.
+         */
         void set_randomness(float new_random)
         {
             random = new_random;
         }
 
+        /**
+         * @brief Selects an action based on the policy, available actions, and game state.
+         *
+         * This method selects an action based on the current policy, available actions, and the game state.
+         *
+         * @param action_type The type of action to select.
+         * @param available_actions A vector of available actions.
+         * @param game_state The current game state.
+         * @return The index of the selected action.
+         */
         int select_action(std::string action_type, std::vector<int> available_actions, Mahjong::State game_state)
         {
             std::string decision_policy = policy;

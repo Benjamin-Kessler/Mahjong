@@ -35,6 +35,12 @@ int main()
         {
             int player_number = 0;
             game.set_human(player_number);
+            for (int i = 0; i < N_PLAYERS; i++)
+            {
+                if (i == player_number)
+                    continue;
+                game.set_player_policy(i, "tile_count");
+            }
 
             if (game.get_set_size() == 0)
             {
@@ -80,6 +86,15 @@ int main()
                     game.player_has_winning_hand(current_player);
                     if (game.is_running())
                         game.player_discard(current_player);
+                    else
+                    {
+                        for (int i = 0; i < N_PLAYERS; i++)
+                        {
+                            cout << "Player " << i << " - ";
+                            game.display_player_score(i, true);
+                        }
+                        cout << "\n";
+                    }
                     game.set_current_player(get<0>(pickup_tuple));
                 }
                 else

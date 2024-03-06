@@ -357,12 +357,28 @@ namespace Mahjong
             current_player = new_current_player;
         }
 
+        /**
+         * @brief Sets the policy for a specific player.
+         *
+         * @param player_number The index of the player whose policy is to be set.
+         * @param new_policy The new policy to be set for the player.
+         */
         void set_player_policy(unsigned int player_number, std::string new_policy)
         {
             Player &player = players[player_number];
             player.set_policy(new_policy);
         }
 
+        /**
+         * @brief Retrieves the game state from the perspective of a specific player.
+         *
+         * This function constructs and returns the game state object from the perspective of a specific player.
+         * The game state includes the hands of all players, where the hand of the specified player may be either
+         * the full hand or only the visible tiles depending on the player's perspective.
+         *
+         * @param player_number The index of the player for whom the game state is to be retrieved.
+         * @return A Mahjong::State object representing the game state from the perspective of the specified player.
+         */
         Mahjong::State get_game_state_for_player(unsigned int player_number)
         {
             std::vector<Mahjong::Hand> hands = {};

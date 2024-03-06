@@ -197,6 +197,14 @@ namespace Mahjong
             return hand.is_winning_hand();
         }
 
+        /**
+         * @brief Returns the Mahjong score for the player's hand.
+         *
+         * Returns the Mahjong score for the player's hand based on whether a full hand score is requested or not.
+         *
+         * @param full_hand Flag indicating whether to calculate the score for the full hand or only the visible tiles. Default is false.
+         * @return A tuple containing the Mahjong score and the corresponding multiplier for the given combination.
+         */
         std::tuple<int, int> get_player_score(bool full_hand = false) const
         {
             if (full_hand)
@@ -205,6 +213,14 @@ namespace Mahjong
                 return hand.get_visible_score();
         }
 
+        /**
+         * @brief Displays the player's Mahjong score.
+         *
+         * Displays the player's Mahjong score based on whether a full hand score is requested and whether Mahjong was declared.
+         *
+         * @param full_hand Flag indicating whether to display the score for the full hand or only the visible tiles. Default is false.
+         * @param mahjong Flag indicating whether Mahjong was declared. Default is false.
+         */
         void display_player_score(bool full_hand = false, bool mahjong = false) const
         {
             std::tuple<int, int> score = get_player_score(full_hand);
@@ -218,6 +234,13 @@ namespace Mahjong
             std::cout << " (" << unmodified_score << " doubled " << multiplier << " times)\n";
         }
 
+        /**
+         * @brief Returns the visible tiles in the player's hand.
+         *
+         * Constructs a new hand containing only the visible tiles from the player's hand.
+         *
+         * @return A Mahjong::Hand object representing the visible tiles in the player's hand.
+         */
         Mahjong::Hand get_visible_hand()
         {
             Mahjong::Hand visible_hand = Hand();
@@ -229,6 +252,11 @@ namespace Mahjong
             return visible_hand;
         }
 
+        /**
+         * @brief Returns the full hand of the player.
+         *
+         * @return A Mahjong::Hand object representing the full hand of the player.
+         */
         Mahjong::Hand get_full_hand()
         {
             return hand;
