@@ -52,8 +52,11 @@ namespace Mahjong
         }
 
         /**
-         * @brief Get the rank of the tile.
-         * @return The rank of the tile.
+         * @brief Constructor for Tile using input variabls
+         *
+         * @param suit_in Int of the desired suit
+         * @param rank_in Int of the desired rank
+         * @return Tile with the provided suit and rank
          */
         Tile(int suit_in, int rank_in) : suit(suit_in), rank(rank_in) {}
 

@@ -14,6 +14,7 @@
 #include "State.hpp"
 #include "Player.hpp"
 #include "Discard_pile.hpp"
+#include "Wind.hpp"
 
 /** @brief Number of players per game. */
 unsigned int N_PLAYERS = 4;
@@ -34,16 +35,19 @@ namespace Mahjong
         int id;                      ///< Unique identifier for the game.
         bool running;                ///< Flag indicating whether the game is currently running.
         std::vector<Player> players; ///< List of players participating in the game.
+        std::vector<int> scores;     ///< List of player scores.
         Mahjong::Set set;            ///< Set of Mahjong tiles used in the game.
         Discard_pile discard_pile;   ///< Discard pile for tiles during the game.
         unsigned int current_player; ///< Index of the current player taking their turn.
+        int n_rounds;                ///< Number of rounds completed in the game.
+        Mahjong::Wind round_wind;    ///< Current round wind
 
     public:
         /**
          * @brief Constructor for the Game class.
          * @param id_in Unique identifier for the game.
          */
-        Game(int id_in) : id(id_in), running(true), current_player(0)
+        Game(int id_in) : id(id_in), running(true), current_player(0), n_rounds(0), round_wind(0)
         {
             std::cout << "Initiated Game with ID " << id << "\n";
 
@@ -56,6 +60,7 @@ namespace Mahjong
             for (size_t player_number = 0; player_number < N_PLAYERS; player_number++)
             {
                 players.push_back(Player(player_number, set));
+                scores.push_back(0);
                 std::cout << "Initiated Player " << player_number << "\n";
             }
 
@@ -63,6 +68,34 @@ namespace Mahjong
                 << "Number of tiles in set: " << set.get_size() << "\n";
         }
 
+        /**
+         * @brief Starts the next round of the game.
+         */
+        void next_round()
+        {
+            std::cout << "Start round " << n_rounds << "\n";
+            running = true;
+            n_rounds += 1;
+            round_wind = Mahjong::Wind(n_rounds % 4);
+            current_player = n_rounds % 4;
+
+            discard_pile = Mahjong::Discard_pile();
+
+            set = Mahjong::Set();
+            set.shuffle();
+
+            players = {};
+            for (size_t player_number = 0; player_number < N_PLAYERS; player_number++)
+            {
+                Mahjong::Player new_player = Player(player_number, set);
+                new_player.rotate_seat_wind();
+                players.push_back(new_player);
+            }
+        }
+
+        /**
+         * @brief Resets the game to its initial state.
+         */
         void reset()
         {
             std::cout << "Reset Game with ID " << id << "\n";
@@ -70,7 +103,7 @@ namespace Mahjong
             running = true;
             current_player = 0;
 
-            discard_pile = Discard_pile();
+            discard_pile = Mahjong::Discard_pile();
 
             set = Mahjong::Set();
             set.shuffle();

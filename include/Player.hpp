@@ -14,6 +14,7 @@
 #include "Policy.hpp"
 #include "Set.hpp"
 #include "Discard_pile.hpp"
+#include "Wind.hpp"
 
 /** @brief Initial money for each player. */
 float STARTING_MONEY = 100;
@@ -43,6 +44,7 @@ namespace Mahjong
         Mahjong::Policy policy;     /**< The AI policy dictating which actions to choose. */
         float money;                /**< The amount of money the player has. */
         Mahjong::Hand hand;         /**< The player's hand of tiles. */
+        Mahjong::Wind seat_wind;    /**< The player's current seat wind. */
 
     public:
         /**
@@ -50,7 +52,7 @@ namespace Mahjong
          * @param number The unique player number.
          * @param set Reference to the tile set for drawing initial tiles.
          */
-        Player(unsigned int number, Mahjong::Set &set) : player_number(number), money(STARTING_MONEY), hand()
+        Player(unsigned int number, Mahjong::Set &set) : player_number(number), money(STARTING_MONEY), hand(), seat_wind(number)
         {
             hand.draw_hand(set);
         }
@@ -260,6 +262,24 @@ namespace Mahjong
         Mahjong::Hand get_full_hand()
         {
             return hand;
+        }
+
+        /**
+         * @brief Get the seat wind of the player.
+         *
+         * @return The seat wind of the player.
+         */
+        Mahjong::Wind get_seat_wind() const
+        {
+            return seat_wind;
+        }
+
+        /**
+         * @brief Rotate the seat wind of the player.
+         */
+        void rotate_seat_wind()
+        {
+            seat_wind.rotate_wind();
         }
     };
 } // namespace Mahjong
