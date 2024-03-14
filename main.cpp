@@ -79,13 +79,13 @@ int main()
                             // std::cout << "Yes broadcast" << std::endl;
                             game.sort_player_hand(current_player);
                             game.display_player_hand(current_player);
-                            game.display_player_score(current_player, true);
+                            game.display_player_score(current_player, true, false);
                         }
                         else
                         {
                             // std::cout << "No broadcast" << std::endl;
                             game.display_visible_player_hand(current_player);
-                            game.display_player_score(current_player, false);
+                            game.display_player_score(current_player, false, false);
                         }
                         game.player_has_winning_hand(current_player);
                         if (game.is_running())
@@ -95,7 +95,16 @@ int main()
                             for (int i = 0; i < N_PLAYERS; i++)
                             {
                                 cout << "Player " << i << " - ";
-                                game.display_player_score(i, true);
+                                if (i == current_player)
+                                {
+                                    game.display_player_score(i, true, true);
+                                    game.add_final_score(i, true);
+                                }
+                                else
+                                {
+                                    game.display_player_score(i, true, false);
+                                    game.add_final_score(i, false);
+                                }
                             }
                             cout << "\n";
                         }
@@ -117,7 +126,7 @@ int main()
                         game.player_turn(current_player, broadcast);
                     }
 
-                    std::this_thread::sleep_for(250ms);
+                    std::this_thread::sleep_for(300ms);
                     std::cout << "\n";
 
                     if (game.get_set_size() == 0)
@@ -126,7 +135,8 @@ int main()
                         for (int i = 0; i < N_PLAYERS; i++)
                         {
                             cout << "Player " << i << " - ";
-                            game.display_player_score(i, true);
+                            game.display_player_score(i, true, false);
+                            game.add_final_score(i, false);
                         }
                         game.finish();
                         cout << "\n";
@@ -139,6 +149,7 @@ int main()
 
                 if (reply == "Y")
                 {
+                    game.display_cumulative_scores();
                     game.next_round();
                     int player_number = 0;
                     game.set_human(player_number);

@@ -485,5 +485,26 @@ namespace Mahjong
             Mahjong::State game_state = Mahjong::State(player_number, seat_wind, round_wind_int, hands, discard_pile);
             return game_state;
         }
+
+        void add_final_score(unsigned int player_number, bool mahjong = false)
+        {
+            Mahjong::Player &player = players[player_number];
+            std::tuple<int, int> score = player.get_player_score(round_wind, true, mahjong);
+            unsigned int unmodified_score = std::get<0>(score);
+            unsigned int multiplier = std::get<1>(score);
+
+            unsigned int total_score = unmodified_score * std::pow(2, multiplier);
+
+            scores[player_number] += total_score;
+        }
+
+        void display_cumulative_scores()
+        {
+            std::cout << "Current scores:\n";
+            for (int i = 0; i < players.size(); i++)
+            {
+                std::cout << "Player " << i << ": " << scores[i] << "\n";
+            }
+        }
     };
 } // namespace Mahjong
