@@ -241,6 +241,45 @@ namespace Mahjong
                 {
                     std::get<0>(score) += 20;
                 }
+
+                // Bonus multiplier for special hands
+                std::set<int> all_suits_set = hand.get_all_suits();
+                std::vector<int> all_suits(all_suits_set.begin(), all_suits_set.end());
+
+                if (all_suits.size() == 1)
+                {
+                    // Only one ground color.
+                    if (all_suits[0] < 3)
+                    {
+                        std::get<1>(score) += 3;
+                    }
+                    // only dragons xor winds.
+                    else
+                    {
+                        std::get<1>(score) += 4;
+                    }
+                }
+
+                all_suits.erase(std::remove(all_suits.begin(), all_suits.end(), 3), all_suits.end());
+                all_suits.erase(std::remove(all_suits.begin(), all_suits.end(), 4), all_suits.end());
+
+                // Only one ground color and dragons/suits.
+                if (all_suits.size() == 1)
+                {
+                    std::get<1>(score) += 2;
+                }
+
+                // Only ones or nines
+                std::set<int> all_ranks_set = hand.get_all_ranks();
+                std::vector<int> all_ranks(all_ranks_set.begin(), all_ranks_set.end());
+
+                if (all_ranks.size() == 1)
+                {
+                    if ((all_ranks[0] == 0) || (all_ranks[0] == 8))
+                    {
+                        std::get<1>(score) += 4;
+                    }
+                }
             }
 
             return score;

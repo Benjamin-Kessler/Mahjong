@@ -398,7 +398,7 @@ namespace Mahjong
          *
          * @return Vector of Player objects.
          */
-        std::vector<Player> get_players()
+        std::vector<Player> get_players() const
         {
             return players;
         }
@@ -486,6 +486,16 @@ namespace Mahjong
             return game_state;
         }
 
+        /**
+         * @brief Adds the final score of the specified player to the cumulative scores.
+         *
+         * This function calculates the final score of the specified player and adds it to the cumulative scores.
+         * The final score is calculated based on the round wind, the full hand status, and whether the player
+         * has Mahjong. The cumulative score of the player is then updated accordingly.
+         *
+         * @param player_number The index of the player for whom the final score is to be added.
+         * @param mahjong Indicates whether the player has Mahjong.
+         */
         void add_final_score(unsigned int player_number, bool mahjong = false)
         {
             Mahjong::Player &player = players[player_number];
@@ -493,12 +503,18 @@ namespace Mahjong
             unsigned int unmodified_score = std::get<0>(score);
             unsigned int multiplier = std::get<1>(score);
 
-            unsigned int total_score = unmodified_score * std::pow(2, multiplier);
+            int total_score = unmodified_score * std::pow(2, multiplier);
+            total_score = std::min(total_score, 3000);
 
             scores[player_number] += total_score;
         }
 
-        void display_cumulative_scores()
+        /**
+         * @brief Displays the cumulative scores of all players.
+         *
+         * This function displays the cumulative scores of all players in the current game.
+         */
+        void display_cumulative_scores() const
         {
             std::cout << "Current scores:\n";
             for (int i = 0; i < players.size(); i++)

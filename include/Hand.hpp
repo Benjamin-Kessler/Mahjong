@@ -1106,7 +1106,7 @@ namespace Mahjong
         }
 
         /**
-         * @brief the visibility of Mahjong tiles at specified indices to true.
+         * @brief Sets the visibility of Mahjong tiles at specified indices to true.
          *
          * @param indices A vector containing the indices of the Mahjong tiles in the hand whose visibility should be set to true.
          */
@@ -1117,6 +1117,39 @@ namespace Mahjong
                 Mahjong::Tile &tile = tiles[index];
                 tile.set_visible();
             }
+        }
+
+        /**
+         * @brief Gets all suits currently in hand.
+         *
+         * @return A set of all integer values representing the suits in hand.
+         */
+        std::set<int> get_all_suits() const
+        {
+            std::set<int> all_suits;
+            for (Mahjong::Tile tile : tiles)
+            {
+                all_suits.insert(tile.get_suit());
+            }
+            return all_suits;
+        }
+
+        /**
+         * @brief Gets all ranks currently in hand. Wind and dragon tiles are ignored.
+         *
+         * @return A set of all integer values representing the ranks in hand.
+         */
+        std::set<int> get_all_ranks() const
+        {
+            std::set<int> all_ranks;
+            for (Mahjong::Tile tile : tiles)
+            {
+                if (tile.get_suit() < 3)
+                {
+                    all_ranks.insert(tile.get_rank());
+                }
+            }
+            return all_ranks;
         }
     };
 } // namespace Mahjong
