@@ -89,7 +89,10 @@ namespace Mahjong
             for (size_t player_number = 0; player_number < N_PLAYERS; player_number++)
             {
                 Mahjong::Player new_player = Player(player_number, set);
-                new_player.rotate_seat_wind();
+                for (int i = 0; i < n_rounds; i++)
+                {
+                    new_player.rotate_seat_wind();
+                }
                 players.push_back(new_player);
             }
         }
@@ -504,8 +507,10 @@ namespace Mahjong
             unsigned int multiplier = std::get<1>(score);
 
             int total_score = unmodified_score * std::pow(2, multiplier);
-            total_score = std::min(total_score, 3000);
-
+            if (total_score > 3000)
+            {
+                total_score = 3000;
+            }
             scores[player_number] += total_score;
         }
 

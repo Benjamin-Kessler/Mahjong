@@ -24,11 +24,6 @@
 /** @brief Initial number of tiles in hand. */
 const unsigned int HAND_SIZE = 13;
 
-/** @brief Special combinations of tiles in hand. */
-// const std::vector<std::set<Mahjong::Tile>> SPECIAL_COMBINATIONS = {
-//     {Mahjong::Tile(3, 0), Mahjong::Tile(3, 1), Mahjong::Tile(3, 2), Mahjong::Tile(3, 3)},
-//     {Mahjong::Tile(4, 0), Mahjong::Tile(4, 1), Mahjong::Tile(4, 2)}};
-
 /**
  * @namespace Mahjong
  * @brief Namespace for Mahjong-related classes and functions.
