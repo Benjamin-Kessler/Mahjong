@@ -26,6 +26,15 @@ namespace Mahjong
         int wind; ///< The wind value.
 
     public:
+        /**
+         * @brief Default constructor for Wind class.
+         */
+        Wind(){};
+
+        /**
+         * @brief Parameterized constructor for Wind class.
+         * @param wind_in The integer representing the wind.
+         */
         Wind(int wind_in) : wind(wind_in) {}
 
         /**
@@ -51,7 +60,7 @@ namespace Mahjong
          */
         void rotate_wind()
         {
-            wind = (wind - 1) % 4;
+            wind = (wind + 3) % 4;
         }
     };
 } // namespace Mahjong

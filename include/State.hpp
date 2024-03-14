@@ -6,6 +6,7 @@
 #include "Discard_pile.hpp"
 #include "Hand.hpp"
 #include "Tile.hpp"
+#include "Wind.hpp"
 
 /**
  * @namespace Mahjong
@@ -20,6 +21,8 @@ namespace Mahjong
     {
     private:
         unsigned int player_number;         ///< The index of the current player.
+        Mahjong::Wind seat_wind;            ///< The seat wind of the current player.
+        Mahjong::Wind round_wind;           ///< The round wind of the current game round.
         std::vector<Mahjong::Hand> hands;   ///< The hands of all players.
         Mahjong::Discard_pile discard_pile; ///< The discard pile.
 
@@ -33,11 +36,13 @@ namespace Mahjong
          * @brief Parameterized constructor for State class.
          *
          * @param input_player_number The index of the current player.
+         * @param input_seat_wind The current player's seat wind.
+         * @param input_player_number The current round wind.
          * @param input_hands The hands of all players.
          * @param input_discard_pile The discard pile.
          */
-        State(unsigned int input_player_number, std::vector<Mahjong::Hand> input_hands, Mahjong::Discard_pile input_discard_pile)
-            : player_number(input_player_number), hands(input_hands), discard_pile(input_discard_pile) {}
+        State(unsigned int input_player_number, int input_seat_wind, int input_round_wind, std::vector<Mahjong::Hand> input_hands, Mahjong::Discard_pile input_discard_pile)
+            : player_number(input_player_number), seat_wind(input_seat_wind), round_wind(input_round_wind), hands(input_hands), discard_pile(input_discard_pile) {}
 
         /**
          * @brief Retrieves the index of the current player.
@@ -119,7 +124,7 @@ namespace Mahjong
             int score = 0;
             for (int index = 0; index < hands.size(); index++)
             {
-                auto scores = hands[index].get_max_score();
+                auto scores = hands[index].get_max_score(round_wind, seat_wind);
                 int player_score = std::get<0>(scores) * pow(2, std::get<1>(scores));
                 if (index == player_number)
                     score += player_score;

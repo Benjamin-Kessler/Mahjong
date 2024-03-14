@@ -13,6 +13,7 @@
 #include "Hand.hpp"
 #include "Policy.hpp"
 #include "Set.hpp"
+#include "State.hpp"
 #include "Discard_pile.hpp"
 #include "Wind.hpp"
 
@@ -39,12 +40,13 @@ namespace Mahjong
     class Player
     {
     private:
-        unsigned int player_number; /**< The unique identifier for the player. */
-        bool is_human = false;      /**< Flag indicating if the player is a human player. */
-        Mahjong::Policy policy;     /**< The AI policy dictating which actions to choose. */
-        float money;                /**< The amount of money the player has. */
-        Mahjong::Hand hand;         /**< The player's hand of tiles. */
-        Mahjong::Wind seat_wind;    /**< The player's current seat wind. */
+        unsigned int player_number;                         /**< The unique identifier for the player. */
+        bool is_human = false;                              /**< Flag indicating if the player is a human player. */
+        Mahjong::Policy policy;                             /**< The AI policy dictating which actions to choose. */
+        float money;                                        /**< The amount of money the player has. */
+        Mahjong::Hand hand;                                 /**< The player's hand of tiles. */
+        Mahjong::Wind seat_wind;                            /**< The player's current seat wind. */
+        std::tuple<Mahjong::Tile, std::string> latest_tile; /**< The latest tile that was drawn and it's origin. */
 
     public:
         /**
@@ -55,6 +57,7 @@ namespace Mahjong
         Player(unsigned int number, Mahjong::Set &set) : player_number(number), money(STARTING_MONEY), hand(), seat_wind(number)
         {
             hand.draw_hand(set);
+            latest_tile = std::tuple(hand.get_tile_by_index(-1), "set");
         }
 
         /**
@@ -89,6 +92,7 @@ namespace Mahjong
         void draw_tile(Mahjong::Set &set, bool broadcast)
         {
             hand.draw_tile(set, broadcast);
+            latest_tile = std::tuple(hand.get_tile_by_index(-1), "set");
         }
 
         /**
@@ -98,6 +102,7 @@ namespace Mahjong
         void pick_tile_from_discard(Discard_pile &discard_pile)
         {
             hand.pick_tile_from_discard(discard_pile);
+            latest_tile = std::tuple(hand.get_tile_by_index(-1), "discard");
         }
 
         /**
@@ -166,11 +171,19 @@ namespace Mahjong
             is_human = true;
         }
 
+        /**
+         * @brief Check if the player is human.
+         * @return Boolean value indicating whether the player is human or not.
+         */
         bool check_human()
         {
             return is_human;
         }
 
+        /**
+         * @brief Set the player's policy.
+         * @param new_policy The new policy as string.
+         */
         void set_policy(std::string new_policy)
         {
             policy.set_policy(new_policy);
@@ -193,6 +206,7 @@ namespace Mahjong
          * `is_winning_hand` method of the Hand class. If the player has a winning hand, a message
          * is displayed indicating the winning status, and the game is set to a non-running state.
          *
+         * @return Boolean indicating whether the player has a winning hand or not.
          */
         bool has_winning_hand() const
         {
@@ -204,15 +218,32 @@ namespace Mahjong
          *
          * Returns the Mahjong score for the player's hand based on whether a full hand score is requested or not.
          *
+         * @param round_wind The current round wind.
          * @param full_hand Flag indicating whether to calculate the score for the full hand or only the visible tiles. Default is false.
+         * @param full_hand Flag indicating whether to calculate the score with potential mahjong bonuses or not. Default is false.
          * @return A tuple containing the Mahjong score and the corresponding multiplier for the given combination.
          */
-        std::tuple<int, int> get_player_score(bool full_hand = false) const
+        std::tuple<int, int> get_player_score(Mahjong::Wind round_wind, bool full_hand = false, bool mahjong = false) const
         {
+            std::tuple<int, int> score;
             if (full_hand)
-                return hand.get_max_score();
+                score = hand.get_max_score(round_wind, seat_wind);
             else
-                return hand.get_visible_score();
+                score = hand.get_visible_score(round_wind, seat_wind);
+
+            if (mahjong)
+            {
+                // Bonus points for Mahjong
+                std::get<0>(score) += 20;
+
+                // Bonus points for completely hidden hand
+                if (hand.get_hidden_hand().size() == hand.get_hand_size())
+                {
+                    std::get<0>(score) += 20;
+                }
+            }
+
+            return score;
         }
 
         /**
@@ -220,19 +251,24 @@ namespace Mahjong
          *
          * Displays the player's Mahjong score based on whether a full hand score is requested and whether Mahjong was declared.
          *
+         * @param round_wind The current round wind.
          * @param full_hand Flag indicating whether to display the score for the full hand or only the visible tiles. Default is false.
          * @param mahjong Flag indicating whether Mahjong was declared. Default is false.
          */
-        void display_player_score(bool full_hand = false, bool mahjong = false) const
+        void display_player_score(Mahjong::Wind round_wind, bool full_hand = false, bool mahjong = false) const
         {
-            std::tuple<int, int> score = get_player_score(full_hand);
+            std::tuple<int, int> score = get_player_score(round_wind, full_hand, mahjong);
             unsigned int unmodified_score = std::get<0>(score);
             unsigned int multiplier = std::get<1>(score);
 
-            if (mahjong)
-                unmodified_score += 20;
-
-            std::cout << "Total score: " << unmodified_score * std::pow(2, multiplier);
+            if (full_hand)
+            {
+                std::cout << "Total score: " << unmodified_score * std::pow(2, multiplier);
+            }
+            else
+            {
+                std::cout << "Known score: " << unmodified_score * std::pow(2, multiplier);
+            }
             std::cout << " (" << unmodified_score << " doubled " << multiplier << " times)\n";
         }
 
@@ -280,6 +316,17 @@ namespace Mahjong
         void rotate_seat_wind()
         {
             seat_wind.rotate_wind();
+        }
+
+        /**
+         * @brief Get the player number.
+         *
+         *
+         * @return The player number
+         */
+        unsigned int get_player_number()
+        {
+            return player_number;
         }
     };
 } // namespace Mahjong

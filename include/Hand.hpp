@@ -16,10 +16,10 @@
 
 #include "Tile.hpp"
 #include "Set.hpp"
-#include "Game.hpp"
 #include "Discard_pile.hpp"
 #include "dlx_exact_cover_solver.hpp"
 #include "score_table.hpp"
+#include "Wind.hpp"
 
 /** @brief Initial number of tiles in hand. */
 const unsigned int HAND_SIZE = 13;
@@ -886,9 +886,12 @@ namespace Mahjong
          * This function initializes the Mahjong score table, generates all possible combinations of tiles,
          * and calculates the maximum score and the sum of multipliers for the current hand based on the scoring table.
          *
+         * @param round_wind The current round wind.
+         * @param seat_wind The corresponding player's seat wind.
+         *
          * @return A tuple containing the maximum Mahjong score and the corresponding sum of multipliers.
          */
-        std::tuple<int, int> get_max_score() const
+        std::tuple<int, int> get_max_score(Mahjong::Wind round_wind, Mahjong::Wind seat_wind) const
         {
             unsigned int max_sum = 0;
             unsigned int max_multiplier_sum = 0;
@@ -898,7 +901,7 @@ namespace Mahjong
             std::vector<std::set<int>> combinations = get_combinations();
             std::set<int> used_tiles;
 
-            std::tie(max_sum, max_multiplier_sum) = get_score_recursive(combinations, used_tiles, 0, 0);
+            std::tie(max_sum, max_multiplier_sum) = get_score_recursive(combinations, used_tiles, 0, 0, round_wind, seat_wind);
 
             return std::make_tuple(max_sum, max_multiplier_sum);
         }
@@ -913,9 +916,12 @@ namespace Mahjong
          * @param used_tiles A set containing indices of tiles that have been used in the current exploration.
          * @param current_index The index of the current combination being explored.
          * @param current_multiplier_sum The current sum of multipliers for the explored combinations.
+         * @param round_wind The current round wind.
+         * @param seat_wind The corresponding player's seat wind.
+         *
          * @return A tuple containing the maximum Mahjong score and the corresponding sum of multipliers.
          */
-        std::tuple<int, int> get_score_recursive(const std::vector<std::set<int>> &combinations, std::set<int> &used_tiles, int current_index, int current_multiplier_sum) const
+        std::tuple<int, int> get_score_recursive(const std::vector<std::set<int>> &combinations, std::set<int> &used_tiles, int current_index, int current_multiplier_sum, Mahjong::Wind round_wind, Mahjong::Wind seat_wind) const
         {
             int max_sum = 0;
             int max_multiplier_sum = current_multiplier_sum;
@@ -937,10 +943,10 @@ namespace Mahjong
                 if (!overlap)
                 {
                     used_tiles.insert(current_combination.begin(), current_combination.end());
-                    auto [current_score, current_multi] = get_combination_score(current_combination);
+                    auto [current_score, current_multi] = get_combination_score(current_combination, round_wind, seat_wind);
 
                     // Recursively explore other combinations
-                    auto [next_sum, next_multiplier_sum] = get_score_recursive(combinations, used_tiles, i + 1, current_multiplier_sum);
+                    auto [next_sum, next_multiplier_sum] = get_score_recursive(combinations, used_tiles, i + 1, current_multiplier_sum, round_wind, seat_wind);
 
                     // Update max_sum and max_multiplier_sum if needed
                     if (next_sum + current_score > max_sum)
@@ -964,18 +970,22 @@ namespace Mahjong
          * @brief Computes the Mahjong score for a given combination of tiles.
          *
          * This function initializes the Mahjong score table and calculates the score for a specific combination
-         * of tiles based on the combination type, suit, and visibility of the tiles.
+         * of tiles based on the combination type, suit, visibility of the tiles as well as the current seat and round winds.
          *
          * @param combination A set of integers representing the indices of tiles in the combination.
+         * @param round_wind The current round wind.
+         * @param seat_wind The corresponding player's seat wind.
+         *
          * @return A tuple containing the Mahjong score and the corresponding multiplier for the given combination.
          */
-        std::tuple<int, int> get_combination_score(std::set<int> combination) const
+        std::tuple<int, int> get_combination_score(std::set<int> combination, Mahjong::Wind round_wind, Mahjong::Wind seat_wind) const
         {
             Mahjong::initialize_score_table();
 
             unsigned int type = get_combination_type(combination);
             unsigned int suit = tiles[*std::next(combination.begin(), 0)].get_suit();
             unsigned int visibility = 0;
+            unsigned int wind = 0;
 
             std::set<int> all_visibilities;
             for (int index : combination)
@@ -996,7 +1006,24 @@ namespace Mahjong
                 visibility = 2; // Multiple visibility states
             }
 
-            return Mahjong::score_table[{type, suit, visibility}];
+            // Add wind information if needed
+            if ((suit == 3) && (type > 1))
+            {
+                unsigned int combination_wind = tiles[*std::next(combination.begin(), 0)].get_rank();
+                if (combination_wind == round_wind.get_wind())
+                {
+                    wind += 1;
+                }
+                if (combination_wind == seat_wind.get_wind())
+                {
+                    wind += 1;
+                }
+                // std::cout << type << suit << visibility << wind << "\n";
+            }
+
+            // std::cout << type << suit << visibility << wind << "\n";
+
+            return Mahjong::score_table[{type, suit, visibility, wind}];
         }
 
         /**
@@ -1004,9 +1031,12 @@ namespace Mahjong
          *
          * Constructs a temporary instance of a hand containing only the visible tiles and computes the score accordingly.
          *
+         * @param round_wind The current round wind.
+         * @param seat_wind The corresponding player's seat wind.
+         *
          * @return A tuple containing the Mahjong score and the corresponding multiplier for the given combination.
          */
-        std::tuple<int, int> get_visible_score() const
+        std::tuple<int, int> get_visible_score(Mahjong::Wind round_wind, Mahjong::Wind seat_wind) const
         {
 
             Mahjong::Hand temp_hand = Hand();
@@ -1016,7 +1046,7 @@ namespace Mahjong
                     temp_hand.add_tile(tile);
             }
 
-            return temp_hand.get_max_score();
+            return temp_hand.get_max_score(round_wind, seat_wind);
         }
 
         /**
@@ -1033,10 +1063,15 @@ namespace Mahjong
          * @brief Returns the tile at the specified index in the player's hand.
          *
          * @param index The index of the tile to retrieve.
+         *
          * @return The Mahjong::Tile object at the specified index.
          */
-        Mahjong::Tile get_tile_by_index(unsigned int index) const
+        Mahjong::Tile get_tile_by_index(int index) const
         {
+            if (index == -1)
+            {
+                return tiles.back();
+            }
             return tiles[index];
         }
 
@@ -1044,6 +1079,7 @@ namespace Mahjong
          * @brief Returns the number of occurrences of a specific tile in the player's hand.
          *
          * @param tile The tile whose occurrences are to be counted.
+         *
          * @return The number of occurrences of the specified tile.
          */
         unsigned int get_n_tile_occurence(Mahjong::Tile tile) const
@@ -1055,6 +1091,7 @@ namespace Mahjong
          * @brief Returns the number of tiles of a specific suit in the player's hand.
          *
          * @param suit The suit for which the number of tiles is to be counted.
+         *
          * @return The number of tiles of the specified suit.
          */
         unsigned int get_n_tiles_of_suit(int suit) const
@@ -1066,6 +1103,20 @@ namespace Mahjong
                     n += 1;
             }
             return n;
+        }
+
+        /**
+         * @brief the visibility of Mahjong tiles at specified indices to true.
+         *
+         * @param indices A vector containing the indices of the Mahjong tiles in the hand whose visibility should be set to true.
+         */
+        void set_tiles_visible(std::vector<int> indices)
+        {
+            for (int index : indices)
+            {
+                Mahjong::Tile &tile = tiles[index];
+                tile.set_visible();
+            }
         }
     };
 } // namespace Mahjong
